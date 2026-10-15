@@ -75,6 +75,7 @@
     background: #8b2d2d;
     animation: tapePulse 2s ease-in-out infinite;
   }
+  .tape-toggle .tape-label { min-width: 4.4em; display: inline-block; }
   @keyframes tapePulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
@@ -453,9 +454,9 @@
 
   function updateHole() {
     var p = Math.min(1, Math.max(0, window.scrollY / maxScroll));
-    var size = 58 + p * 60;              // 58px → 118px
+    var size = 58 + p * 130;             // 58px → 188px
     var isMobile = window.innerWidth < 640;
-    if (isMobile) size = 34 + p * 34;    // 34px → 68px on mobile
+    if (isMobile) size = 34 + p * 70;    // 34px → 104px on mobile
     hole.style.width = size + "px";
     hole.style.height = size + "px";
   }
@@ -475,12 +476,12 @@
     var AC = window.AudioContext || window.webkitAudioContext;
     ctx = new AC();
 
-    // Master volume — very low, background presence
+    // Master — the entire tape sits quietly under everything else
     var master = ctx.createGain();
     master.gain.value = 0;
     master.connect(ctx.destination);
 
-    // 1. Hiss: white noise through a bandpass, high shelf rolled off
+    // 1. Steady hiss. Constant level, no swell. This is the body of the sound.
     var bufferSize = ctx.sampleRate * 2;
     var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     var data = buffer.getChannelData(0);
@@ -492,42 +493,73 @@
 
     var bandpass = ctx.createBiquadFilter();
     bandpass.type = "bandpass";
-    bandpass.frequency.value = 3200;
-    bandpass.Q.value = 0.6;
+    bandpass.frequency.value = 2200;
+    bandpass.Q.value = 0.5;
 
     var hissGain = ctx.createGain();
-    hissGain.gain.value = 0.35;
+    hissGain.gain.value = 0.30;
 
     noise.connect(bandpass);
     bandpass.connect(hissGain);
     hissGain.connect(master);
 
-    // 2. Slow mechanical wobble — a low sine that modulates the hiss gain
-    var wobble = ctx.createOscillator();
-    wobble.type = "sine";
-    wobble.frequency.value = 2.2;    // rotations per second
+    // 2. Very gentle wow — a small pitch instability on the hiss, the way
+    // real tape drifts. Barely there. Not a swell, a tremor.
+    var wow = ctx.createOscillator();
+    wow.type = "sine";
+    wow.frequency.value = 0.7;        // 0.7 Hz — slow but not tidal
 
-    var wobbleGain = ctx.createGain();
-    wobbleGain.gain.value = 0.10;
+    var wowGain = ctx.createGain();
+    wowGain.gain.value = 0.025;       // tiny — you shouldn't notice it, just feel it
+    wow.connect(wowGain);
+    wowGain.connect(hissGain.gain);
 
-    wobble.connect(wobbleGain);
-    wobbleGain.connect(hissGain.gain);
-
-    // 3. Low motor whir — quiet sine underneath
+    // 3. Low mechanical hum. Steady, unremarkable, always present.
     var motor = ctx.createOscillator();
     motor.type = "sine";
-    motor.frequency.value = 58;      // low hum
+    motor.frequency.value = 46;
 
     var motorGain = ctx.createGain();
-    motorGain.gain.value = 0.06;
+    motorGain.gain.value = 0.05;
     motor.connect(motorGain);
     motorGain.connect(master);
 
-    noise.start();
-    wobble.start();
-    motor.start();
+    // 4. Second hum, detuned by a fraction of a Hz. The two drift against
+    // each other over about 20 seconds. You never catch the swell, only
+    // notice it was louder a moment ago. This is the unease.
+    var motor2 = ctx.createOscillator();
+    motor2.type = "sine";
+    motor2.frequency.value = 46.05;
 
-    nodes = { master: master, noise: noise, wobble: wobble, motor: motor };
+    var motor2Gain = ctx.createGain();
+    motor2Gain.gain.value = 0.05;
+    motor2.connect(motor2Gain);
+    motor2Gain.connect(master);
+
+    // 5. A very faint high-frequency tick, like tape transport. Very quiet,
+    // irregular, adds a mechanical quality without reading as rhythm.
+    var tickFilter = ctx.createBiquadFilter();
+    tickFilter.type = "highpass";
+    tickFilter.frequency.value = 6000;
+
+    var tickNoise = ctx.createBufferSource();
+    tickNoise.buffer = buffer;
+    tickNoise.loop = true;
+
+    var tickGain = ctx.createGain();
+    tickGain.gain.value = 0.012;
+
+    tickNoise.connect(tickFilter);
+    tickFilter.connect(tickGain);
+    tickGain.connect(master);
+
+    noise.start();
+    wow.start();
+    motor.start();
+    motor2.start();
+    tickNoise.start();
+
+    nodes = { master: master, noise: noise, wow: wow, motor: motor, motor2: motor2, tickNoise: tickNoise };
   }
 
   function fadeTo(target, time) {
@@ -543,7 +575,7 @@
     label.textContent = on ? "Tape on" : "Tape off";
     if (!ctx) makeTapeSound();
     if (ctx.state === "suspended") ctx.resume();
-    fadeTo(on ? 0.14 : 0, on ? 0.6 : 0.4);
+    fadeTo(on ? 0.45 : 0, on ? 1.2 : 0.6);
   }
 
   toggle.addEventListener("click", toggleTape);
