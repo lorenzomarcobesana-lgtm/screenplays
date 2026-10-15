@@ -26,7 +26,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Black hole — grows as you scroll */
+  /* ── Black hole ─────────────────────────────────────────── */
   .black-hole {
     position: fixed;
     top: 34px;
@@ -41,7 +41,7 @@
     will-change: width, height;
   }
 
-  /* Tape toggle */
+  /* ── Tape toggle ────────────────────────────────────────── */
   .tape-toggle {
     position: fixed;
     top: 108px;
@@ -75,7 +75,6 @@
     background: #8b2d2d;
     animation: tapePulse 2s ease-in-out infinite;
   }
-  .tape-toggle .tape-label { min-width: 4.4em; display: inline-block; }
   @keyframes tapePulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
@@ -115,8 +114,23 @@
     font-size: 0.85rem;
     letter-spacing: 0.06em;
     color: var(--muted);
-    margin: 0;
+    margin: 0 0 1rem;
   }
+
+  /* ── Four chairs ────────────────────────────────────────── */
+  .chairs {
+    display: flex;
+    gap: 8px;
+    color: var(--line);
+    margin: 0 0 1rem;
+    min-height: 20px;
+  }
+  .chair {
+    width: 12px;
+    height: 20px;
+    transition: opacity 0.4s ease;
+  }
+  .chair.gone { opacity: 0; }
 
   .log {
     font-family: "Inter", -apple-system, sans-serif;
@@ -146,6 +160,19 @@
   .paren { margin-left: 16%; margin-right: 16%; margin-top: 0; margin-bottom: 0; font-style: italic; }
   .transition { text-align: right; text-transform: uppercase; margin: 2rem 0; }
   .end { text-align: center; margin-top: 3rem; font-weight: 700; letter-spacing: 0.06em; }
+
+  /* Typewriter cursor during typing */
+  .typing::after {
+    content: "\2588";
+    color: var(--muted);
+    opacity: 0.6;
+    margin-left: 1px;
+    animation: cursorBlink 0.8s steps(2) infinite;
+  }
+  @keyframes cursorBlink {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0; }
+  }
 
   .afterword {
     margin-top: 5rem;
@@ -182,6 +209,12 @@
   <header>
     <h1>Four Chairs</h1>
     <p class="byline">Lorenzo Marco Besana</p>
+    <div class="chairs" id="chairs" aria-hidden="true">
+      <svg class="chair" viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="10" height="9" rx="0.5"/><line x1="2.5" y1="10" x2="2.5" y2="19"/><line x1="9.5" y1="10" x2="9.5" y2="19"/></svg>
+      <svg class="chair" viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="10" height="9" rx="0.5"/><line x1="2.5" y1="10" x2="2.5" y2="19"/><line x1="9.5" y1="10" x2="9.5" y2="19"/></svg>
+      <svg class="chair" viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="10" height="9" rx="0.5"/><line x1="2.5" y1="10" x2="2.5" y2="19"/><line x1="9.5" y1="10" x2="9.5" y2="19"/></svg>
+      <svg class="chair" viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="10" height="9" rx="0.5"/><line x1="2.5" y1="10" x2="2.5" y2="19"/><line x1="9.5" y1="10" x2="9.5" y2="19"/></svg>
+    </div>
   </header>
 
   <div class="log">
@@ -348,15 +381,15 @@
     <p class="action">She plays the tape. [Text in italic is on tape].</p>
 
     <p class="character">Man</p>
-    <p class="dialogue"><em>First week of observation failed to produce any conclusive results.</em></p>
+    <p class="dialogue"><em data-typewriter>First week of observation failed to produce any conclusive results.</em></p>
 
     <p class="character">Student</p>
     <p class="dialogue">First week?</p>
 
     <p class="character">Man</p>
-    <p class="dialogue"><em>The anomaly doesn't appear to weigh anything as well as it doesn't show any signs of emitting nor absorbing or attracting anything.</em></p>
+    <p class="dialogue"><em data-typewriter>The anomaly doesn't appear to weigh anything as well as it doesn't show any signs of emitting nor absorbing or attracting anything.</em></p>
 
-    <p class="action">The tape keeps playing with no voice on it.</p>
+    <p class="action" id="tape-silent">The tape keeps playing with no voice on it.</p>
 
     <p class="character">Man</p>
     <p class="dialogue">Exactly.</p>
@@ -390,7 +423,7 @@
 
     <p class="action">She lifts her right hand. She is wearing a wedding ring.</p>
 
-    <p class="character">Supervisor</p>
+    <p class="character" id="ring-speech">Supervisor</p>
     <p class="dialogue">Did you put this on me in my sleep? That's sick. You couldn't even bother to put any initials on it? Just mine? That's not how wedding rings work. You are supposed to be a PhD student, dumbass.</p>
 
     <p class="character">Student</p>
@@ -436,7 +469,7 @@
 
   </div>
 
-  <p class="afterword">It doesn't emit any sound.<br>It doesn't move.</p>
+  <p class="afterword" id="afterword">It doesn't emit any sound.<br>It doesn't move.</p>
 
 </div>
 
@@ -444,7 +477,7 @@
 (function () {
   "use strict";
 
-  // ── Black hole grows as you scroll ──────────────────────────────
+  // ── 1. Black hole grows as you scroll ──────────────────────────
   var hole = document.getElementById("blackHole");
   var maxScroll = 1;
 
@@ -454,9 +487,8 @@
 
   function updateHole() {
     var p = Math.min(1, Math.max(0, window.scrollY / maxScroll));
-    var size = 58 + p * 130;             // 58px → 188px
     var isMobile = window.innerWidth < 640;
-    if (isMobile) size = 34 + p * 70;    // 34px → 104px on mobile
+    var size = isMobile ? (34 + p * 70) : (58 + p * 130);
     hole.style.width = size + "px";
     hole.style.height = size + "px";
   }
@@ -466,7 +498,7 @@
   recalcMax();
   updateHole();
 
-  // ── Tape sound ──────────────────────────────────────────────────
+  // ── 2. Tape sound ──────────────────────────────────────────────
   var toggle = document.getElementById("tapeToggle");
   var label = toggle.querySelector(".tape-label");
   var ctx = null;
@@ -476,12 +508,10 @@
     var AC = window.AudioContext || window.webkitAudioContext;
     ctx = new AC();
 
-    // Master — the entire tape sits quietly under everything else
     var master = ctx.createGain();
     master.gain.value = 0;
     master.connect(ctx.destination);
 
-    // 1. Steady hiss. Constant level, no swell. This is the body of the sound.
     var bufferSize = ctx.sampleRate * 2;
     var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     var data = buffer.getChannelData(0);
@@ -503,52 +533,39 @@
     bandpass.connect(hissGain);
     hissGain.connect(master);
 
-    // 2. Very gentle wow — a small pitch instability on the hiss, the way
-    // real tape drifts. Barely there. Not a swell, a tremor.
     var wow = ctx.createOscillator();
     wow.type = "sine";
-    wow.frequency.value = 0.7;        // 0.7 Hz — slow but not tidal
+    wow.frequency.value = 0.7;
 
     var wowGain = ctx.createGain();
-    wowGain.gain.value = 0.025;       // tiny — you shouldn't notice it, just feel it
+    wowGain.gain.value = 0.025;
     wow.connect(wowGain);
     wowGain.connect(hissGain.gain);
 
-    // 3. Low mechanical hum. Steady, unremarkable, always present.
     var motor = ctx.createOscillator();
     motor.type = "sine";
     motor.frequency.value = 46;
-
     var motorGain = ctx.createGain();
     motorGain.gain.value = 0.05;
     motor.connect(motorGain);
     motorGain.connect(master);
 
-    // 4. Second hum, detuned by a fraction of a Hz. The two drift against
-    // each other over about 20 seconds. You never catch the swell, only
-    // notice it was louder a moment ago. This is the unease.
     var motor2 = ctx.createOscillator();
     motor2.type = "sine";
     motor2.frequency.value = 46.05;
-
     var motor2Gain = ctx.createGain();
     motor2Gain.gain.value = 0.05;
     motor2.connect(motor2Gain);
     motor2Gain.connect(master);
 
-    // 5. A very faint high-frequency tick, like tape transport. Very quiet,
-    // irregular, adds a mechanical quality without reading as rhythm.
     var tickFilter = ctx.createBiquadFilter();
     tickFilter.type = "highpass";
     tickFilter.frequency.value = 6000;
-
     var tickNoise = ctx.createBufferSource();
     tickNoise.buffer = buffer;
     tickNoise.loop = true;
-
     var tickGain = ctx.createGain();
     tickGain.gain.value = 0.012;
-
     tickNoise.connect(tickFilter);
     tickFilter.connect(tickGain);
     tickGain.connect(master);
@@ -559,7 +576,7 @@
     motor2.start();
     tickNoise.start();
 
-    nodes = { master: master, noise: noise, wow: wow, motor: motor, motor2: motor2, tickNoise: tickNoise };
+    nodes = { master: master, noise: noise, wow: wow, motor: motor, motor2: motor2, tickNoise: tickNoise, hissGain: hissGain };
   }
 
   function fadeTo(target, time) {
@@ -580,14 +597,130 @@
 
   toggle.addEventListener("click", toggleTape);
 
-  // Optional: gentle autostart on first scroll/click if user didn't toggle.
-  // Left off intentionally — the toggle is the way in. Commented out here
-  // so you can enable it if you change your mind:
-  //
-  // document.addEventListener("click", function () {
-  //   if (!ctx) { makeTapeSound(); ctx.resume(); fadeTo(0.14, 0.8);
-  //     toggle.classList.add("on"); label.textContent = "Tape on"; }
-  // }, { once: true });
+  // ── 3. Typewriter for the two on-tape lines ────────────────────
+  function typeOut(el, speed) {
+    var full = el.textContent;
+    el.textContent = "";
+    el.classList.add("typing");
+    var i = 0;
+    function step() {
+      if (i >= full.length) {
+        el.classList.remove("typing");
+        return;
+      }
+      el.textContent = full.slice(0, i + 1);
+      i++;
+      // Slight irregularity so it doesn't feel mechanical-smooth
+      var delay = speed + Math.random() * 40;
+      if (full[i - 1] === "." || full[i - 1] === ",") delay += 120;
+      window.setTimeout(step, delay);
+    }
+    step();
+  }
+
+  var typed = false;
+  var tapeLines = document.querySelectorAll("[data-typewriter]");
+  var tapeObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting && !typed) {
+        typed = true;
+        tapeLines.forEach(function (el, idx) {
+          window.setTimeout(function () { typeOut(el, 45); }, idx * 400);
+        });
+        tapeObserver.disconnect();
+      }
+    });
+  }, { threshold: 0.4 });
+  if (tapeLines.length) tapeObserver.observe(tapeLines[0]);
+
+  // ── 4. Single laugh, tied to the "tape keeps playing" line ─────
+  function playLaugh() {
+    if (!ctx || !nodes) return;
+    var now = ctx.currentTime + 0.05;
+    for (var i = 0; i < 2; i++) {
+      var t = now + i * 0.30;
+      var osc = ctx.createOscillator();
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(190, t);
+      osc.frequency.exponentialRampToValueAtTime(150, t + 0.20);
+
+      var bp = ctx.createBiquadFilter();
+      bp.type = "bandpass";
+      bp.frequency.value = 720;
+      bp.Q.value = 3.5;
+
+      var g = ctx.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.55, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+
+      osc.connect(bp);
+      bp.connect(g);
+      g.connect(nodes.master);
+
+      osc.start(t);
+      osc.stop(t + 0.26);
+    }
+  }
+
+  var laughed = false;
+  var silentLine = document.getElementById("tape-silent");
+  if (silentLine) {
+    var laughObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && !laughed) {
+          laughed = true;
+          // Only if the tape is actually on
+          if (toggle.classList.contains("on")) {
+            // Silence for a beat, then the laugh, then it's gone
+            window.setTimeout(function () { playLaugh(); }, 1600);
+          }
+          laughObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.6 });
+    laughObserver.observe(silentLine);
+  }
+
+  // ── 5. Chair disappears at the ring speech, fourth returns at the end
+  var chairs = document.querySelectorAll(".chair");
+  var ringSpeech = document.getElementById("ring-speech");
+  var afterword = document.getElementById("afterword");
+  var chairGone = false;
+  var chairBack = false;
+
+  if (ringSpeech && chairs.length >= 4) {
+    var ringObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && !chairGone) {
+          chairGone = true;
+          chairs[3].classList.add("gone");
+          ringObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.5 });
+    ringObserver.observe(ringSpeech);
+  }
+
+  if (afterword) {
+    var endObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && !chairBack) {
+          chairBack = true;
+          // Bring the fourth chair back, empty, in a different place
+          var fourth = chairs[3];
+          fourth.classList.remove("gone");
+          fourth.style.opacity = "0";
+          // Detach it and place it at the end of the row
+          var row = document.getElementById("chairs");
+          row.appendChild(fourth);
+          window.requestAnimationFrame(function () { fourth.style.opacity = ""; });
+          endObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.4 });
+    endObserver.observe(afterword);
+  }
 })();
 </script>
 
