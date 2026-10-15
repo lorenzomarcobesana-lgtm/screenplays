@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Four Chairs &mdash; Lorenzo Marco Besana</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Courier+Prime:wght@400;700&family=Inter:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #faf8f3;
+    --ink: #1a1712;
+    --muted: #6a6458;
+    --line: #e6e1d4;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Courier Prime", "Courier New", Courier, monospace;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .black-hole {
+    position: fixed;
+    top: 34px;
+    right: 34px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: #000;
+    z-index: 10;
+    pointer-events: none;
+  }
+  @media (max-width: 640px) {
+    .black-hole { top: 16px; right: 16px; width: 34px; height: 34px; }
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 5rem 1.5rem 6rem; }
+  .back-link {
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 3rem;
+  }
+  .back-link:hover { color: var(--ink); }
+  header { margin-bottom: 2.5rem; }
+  h1 {
+    font-family: "EB Garamond", Georgia, serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 2.4rem;
+    letter-spacing: -0.015em;
+    margin: 0 0 0.4rem;
+    line-height: 1.1;
+  }
+  header .byline {
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 0;
+  }
+  .log {
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 3.5rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .script {
+    font-family: "Courier Prime", "Courier New", Courier, monospace;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .script p { margin: 0 0 1rem; white-space: pre-wrap; }
+  .scene-head {
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-top: 2.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .action { margin: 0 0 1rem; }
+  .character {
+    margin-left: 22%;
+    margin-top: 1.1rem;
+    margin-bottom: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  .dialogue {
+    margin-left: 12%;
+    margin-right: 12%;
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+  }
+  .paren {
+    margin-left: 16%;
+    margin-right: 16%;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-style: italic;
+  }
+  .transition {
+    text-align: right;
+    text-transform: uppercase;
+    margin: 2rem 0;
+  }
+  .end {
+    text-align: center;
+    margin-top: 3rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+  .afterword {
+    margin-top: 5rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--line);
+    font-family: "EB Garamond", Georgia, serif;
+    font-style: italic;
+    font-size: 1.08rem;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.7;
+  }
+  @media (max-width: 560px) {
+    .wrap { padding: 3rem 1.25rem 4rem; }
+    h1 { font-size: 1.9rem; }
+    .script { font-size: 14px; }
+    .character { margin-left: 15%; }
+    .dialogue { margin-left: 8%; margin-right: 8%; }
+    .paren { margin-left: 12%; margin-right: 12%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="black-hole" aria-hidden="true"></div>
+
+<div class="wrap">
+  <a class="back-link" href="./">&larr; Screenplays</a>
+
+  <header>
+    <h1>Four Chairs</h1>
+    <p class="byline">Lorenzo Marco Besana</p>
+  </header>
+
+  <div class="log">
+    <span>Observation &middot; Week 1</span>
+    <span>3 in attendance</span>
+  </div>
+
+  <div class="script">
+
+    <p class="scene-head">EXT. BUILDING - DAY</p>
+
+    <p class="action">It's cold.</p>
+    <p class="action">There are four chairs and three people in front of a door.</p>
+    <p class="action">The man [RE: Man] and the younger man [RE: Student] sit in front of each other. The woman [RE: Supervisor] stands behind the Man.</p>
+    <p class="action">The Supervisor and the Man wear a winter jacket, while the Student is in a T-shirt.</p>
+    <p class="action">The Man and the Student smoke with their head to the ground. The Supervisor is observing the Student.</p>
+    <p class="action">He notices her stare.</p>
+
+    <p class="character">Student</p>
+    <p class="dialogue">What?</p>
+
+    <p class="character">Supervisor</p>
+    <p class="dialogue">Where the fuck is your jacket?</p>
+
+    <p class="action">The Man snaps back.</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">HEY! What's with the language.</p>
+
+    <p class="character">Student</p>
+    <p class="dialogue">I don't have a jacket.</p>
+
+    <p class="character">Supervisor</p>
+    <p class="dialogue">It's December why is he in a fucking T-shirt?</p>
+
+    <p class="action">The Man stands up and turns to her.</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">You really can't talk to him like that.</p>
+
+    <p class="character">Student</p>
+    <p class="dialogue">I can speak up for myself, you know?</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">Shut up and go finish setting up.</p>
+
+    <p class="action">The Student throws his cigarette to the ground and heads inside.</p>
+
+    <p class="character">Student</p>
+    <p class="dialogue">This some bullshit.</p>
+
+    <p class="character">Supervisor</p>
+    <p class="dialogue">Hey!</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">Let him go.</p>
+
+    <p class="action">The Student enters the building.</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">What the fuck was that?</p>
+
+    <p class="character">Supervisor</p>
+    <p class="dialogue">He should have his jacket.</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">Well he didn't bring, so what now?</p>
+
+    <p class="action">She scoffs and heads inside. He follows her.</p>
+
+    <p class="scene-head">INT. ROOM - CONTINUOUS</p>
+
+    <p class="action">There is a BLACK HOLE LEVITATING IN THE MIDDLE OF THE ROOM. It doesn't emit any sound, it doesn't move.</p>
+    <p class="action">On the right a large table is crowded with all sorts of science equipment.</p>
+    <p class="action">The Student is kneeled at a safe distance across from it. He is setting up McGuffin #1 behind an orange tape line.</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">Is it ready?</p>
+
+    <p class="action">The Student turns to them, tilts his head.</p>
+
+    <p class="character">Student</p>
+    <p class="dialogue">Yeah?</p>
+
+    <p class="character">Supervisor</p>
+    <p class="dialogue">Are you confused about it?</p>
+
+    <p class="character">Student</p>
+    <p class="dialogue">I didn't set it up.</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">So it's not ready.</p>
+
+    <p class="character">Student</p>
+    <p class="dialogue">No. It's ready. It's already been calibrated.</p>
+
+    <p class="character">Supervisor</p>
+    <p class="dialogue">Do you even know how?</p>
+
+    <p class="character">Student</p>
+    <p class="dialogue">I do not.</p>
+
+    <p class="character">Supervisor</p>
+    <p class="paren">(whispered)</p>
+    <p class="dialogue">Just go check it out.</p>
+
+    <p class="action">The Man approaches the Student.</p>
+    <p class="action">We stay on the Supervisor. Her attention diverts to the table. Something doesn't add up.</p>
+
+    <p class="action">CLOSE ON STUDENT AND MAN</p>
+
+    <p class="action">The man kneels next to the Student to observe McGuffin #1.</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">Let's see.</p>
+
+    <p class="action">The man starts doing [INSERT SCIENCE THINGY]. We notice his right hand is MISSING the PINKY.</p>
+
+    <p class="character">Student</p>
+    <p class="dialogue">By the way I never asked you what happened there.</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">Where?</p>
+
+    <p class="action">The Student nods to Man's hand. The Man doesn't understand.</p>
+
+    <p class="character">Student</p>
+    <p class="dialogue">Your pinky. How'd you lose it?</p>
+
+    <p class="action">The Man looks down at his own hand.</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">What&mdash; It's just the way it is.</p>
+
+    <p class="character">Student</p>
+    <p class="dialogue">Does it ever hurt?</p>
+
+    <p class="action">The man closes his fist, closely observing his four fingers.</p>
+
+    <p class="character">Supervisor (O.C.)</p>
+    <p class="dialogue">What the fuck is this?</p>
+
+    <p class="action">The man and the Student turn to the Supervisor. She is holding a TAPE RECORDER.</p>
+    <p class="action">The man and the Student stand up.</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">What about it?</p>
+
+    <p class="character">Supervisor</p>
+    <p class="dialogue">Did you play it?</p>
+
+    <p class="character">Student</p>
+    <p class="dialogue">Why would we play it? We the ones doing the recording.</p>
+
+    <p class="character">Supervisor</p>
+    <p class="dialogue">You are fucking with it, aren't you? You are fucking with me. You always are.</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">Nora. You need to calm down.</p>
+
+    <p class="character">Supervisor</p>
+    <p class="dialogue">I need to&mdash; Sure. Listen to this. This little shit is fucking with me.</p>
+
+    <p class="action">She plays the tape. [Text in italic is on tape].</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue"><em>First week of observation failed to produce any conclusive results.</em></p>
+
+    <p class="character">Student</p>
+    <p class="dialogue">First week?</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue"><em>The anomaly doesn't appear to weigh anything as well as it doesn't show any signs of emitting nor absorbing or attracting anything.</em></p>
+
+    <p class="action">The tape keeps playing with no voice on it.</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">Exactly.</p>
+
+    <p class="action">The tape keeps playing. No voice. On the tape we hear the Supervisor and the Man laughing thunderously.</p>
+
+    <p class="character">Supervisor</p>
+    <p class="paren">(catching her breath)</p>
+    <p class="dialogue">Alright. Alright. All jokes aside. This anomaly might be a unicum in human history. We may have never seen anything like this before.</p>
+
+    <p class="action">The Supervisor stops the recording.</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">How did you do this?</p>
+
+    <p class="character">Student</p>
+    <p class="dialogue">Do what?</p>
+
+    <p class="character">Supervisor</p>
+    <p class="dialogue">You understand you are fucking done, right?</p>
+
+    <p class="action">She starts going through the table.</p>
+
+    <p class="character">Supervisor (CONT'D)</p>
+    <p class="dialogue">Four cups, four pairs of gloves.</p>
+
+    <p class="action">She points in a corner.</p>
+
+    <p class="character">Supervisor (CONT'D)</p>
+    <p class="dialogue">Those random shoes. What else do you have in your backpack? A fourth toothbrush? It doesn't even make sense.</p>
+
+    <p class="action">She lifts her right hand. She is wearing a wedding ring.</p>
+
+    <p class="character">Supervisor</p>
+    <p class="dialogue">Did you put this on me in my sleep? That's sick. You couldn't even bother to put any initials on it? Just mine? That's not how wedding rings work. You are supposed to be a PhD student, dumbass.</p>
+
+    <p class="character">Student</p>
+    <p class="dialogue">What in the actual fuck are you talking about?</p>
+
+    <p class="action">As the Supervisor and the Man keep arguing the man looks back down at his four fingers.</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">Nora, how many fingers do I have?</p>
+
+    <p class="character">Supervisor</p>
+    <p class="dialogue">What?</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">On my right hand. How many fingers?</p>
+
+    <p class="character">Supervisor</p>
+    <p class="dialogue">What kind of question is that?</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">We've known each other 20 years. It's a simple question.</p>
+
+    <p class="action">He raises his hands. Showing the four fingers.</p>
+    <p class="action">She steps back.</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">There are four chairs outside, Nora.</p>
+
+    <p class="character">Supervisor</p>
+    <p class="dialogue">It's not possible.</p>
+
+    <p class="character">Man</p>
+    <p class="dialogue">The McGuffin #1 was calibrated already.</p>
+
+    <p class="action">The three of them look at each other and distance themselves from one another. They turn to the black hole.</p>
+    <p class="action">The McGuffin #1 flares up.</p>
+    <p class="action">Nora drops to her knees.</p>
+    <p class="action">She starts screaming her lungs out.</p>
+
+    <p class="transition">CAMERA PANS OUT.</p>
+
+    <p class="end">THE END.</p>
+
+  </div>
+
+  <p class="afterword">It doesn't emit any sound.<br>It doesn't move.</p>
+
+</div>
+
+</body>
+</html>
