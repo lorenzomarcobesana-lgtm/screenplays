@@ -25,6 +25,8 @@
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
   }
+
+  /* Black hole — grows as you scroll */
   .black-hole {
     position: fixed;
     top: 34px;
@@ -35,11 +37,56 @@
     background: #000;
     z-index: 10;
     pointer-events: none;
+    transition: width 0.3s ease, height 0.3s ease;
+    will-change: width, height;
   }
+
+  /* Tape toggle */
+  .tape-toggle {
+    position: fixed;
+    top: 108px;
+    right: 34px;
+    z-index: 11;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    background: rgba(250, 248, 243, 0.85);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .tape-toggle:hover { color: var(--ink); border-color: var(--muted); }
+  .tape-toggle .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--line);
+    transition: background 0.2s ease;
+  }
+  .tape-toggle.on .dot {
+    background: #8b2d2d;
+    animation: tapePulse 2s ease-in-out infinite;
+  }
+  @keyframes tapePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
   @media (max-width: 640px) {
     .black-hole { top: 16px; right: 16px; width: 34px; height: 34px; }
+    .tape-toggle { top: 60px; right: 16px; font-size: 0.55rem; padding: 4px 8px; }
   }
+
   .wrap { max-width: 720px; margin: 0 auto; padding: 5rem 1.5rem 6rem; }
+
   .back-link {
     font-family: "Inter", -apple-system, sans-serif;
     font-size: 0.72rem;
@@ -51,6 +98,7 @@
     margin-bottom: 3rem;
   }
   .back-link:hover { color: var(--ink); }
+
   header { margin-bottom: 2.5rem; }
   h1 {
     font-family: "EB Garamond", Georgia, serif;
@@ -68,6 +116,7 @@
     color: var(--muted);
     margin: 0;
   }
+
   .log {
     font-family: "Inter", -apple-system, sans-serif;
     font-size: 0.68rem;
@@ -82,50 +131,21 @@
     justify-content: space-between;
     gap: 1rem;
   }
+
   .script {
     font-family: "Courier Prime", "Courier New", Courier, monospace;
     font-size: 15px;
     line-height: 1.55;
   }
   .script p { margin: 0 0 1rem; white-space: pre-wrap; }
-  .scene-head {
-    font-weight: 700;
-    text-transform: uppercase;
-    margin-top: 2.5rem;
-    margin-bottom: 1.25rem;
-  }
+  .scene-head { font-weight: 700; text-transform: uppercase; margin-top: 2.5rem; margin-bottom: 1.25rem; }
   .action { margin: 0 0 1rem; }
-  .character {
-    margin-left: 22%;
-    margin-top: 1.1rem;
-    margin-bottom: 0;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-  }
-  .dialogue {
-    margin-left: 12%;
-    margin-right: 12%;
-    margin-top: 0;
-    margin-bottom: 0.75rem;
-  }
-  .paren {
-    margin-left: 16%;
-    margin-right: 16%;
-    margin-top: 0;
-    margin-bottom: 0;
-    font-style: italic;
-  }
-  .transition {
-    text-align: right;
-    text-transform: uppercase;
-    margin: 2rem 0;
-  }
-  .end {
-    text-align: center;
-    margin-top: 3rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-  }
+  .character { margin-left: 22%; margin-top: 1.1rem; margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.02em; }
+  .dialogue { margin-left: 12%; margin-right: 12%; margin-top: 0; margin-bottom: 0.75rem; }
+  .paren { margin-left: 16%; margin-right: 16%; margin-top: 0; margin-bottom: 0; font-style: italic; }
+  .transition { text-align: right; text-transform: uppercase; margin: 2rem 0; }
+  .end { text-align: center; margin-top: 3rem; font-weight: 700; letter-spacing: 0.06em; }
+
   .afterword {
     margin-top: 5rem;
     padding-top: 2.5rem;
@@ -137,6 +157,7 @@
     text-align: center;
     line-height: 1.7;
   }
+
   @media (max-width: 560px) {
     .wrap { padding: 3rem 1.25rem 4rem; }
     h1 { font-size: 1.9rem; }
@@ -149,7 +170,10 @@
 </head>
 <body>
 
-<div class="black-hole" aria-hidden="true"></div>
+<div class="black-hole" id="blackHole" aria-hidden="true"></div>
+<button class="tape-toggle" id="tapeToggle" type="button" aria-label="Toggle tape sound">
+  <span class="dot"></span><span class="tape-label">Tape off</span>
+</button>
 
 <div class="wrap">
   <a class="back-link" href="./">&larr; Screenplays</a>
@@ -414,6 +438,126 @@
   <p class="afterword">It doesn't emit any sound.<br>It doesn't move.</p>
 
 </div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ── Black hole grows as you scroll ──────────────────────────────
+  var hole = document.getElementById("blackHole");
+  var maxScroll = 1;
+
+  function recalcMax() {
+    maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+  }
+
+  function updateHole() {
+    var p = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+    var size = 58 + p * 60;              // 58px → 118px
+    var isMobile = window.innerWidth < 640;
+    if (isMobile) size = 34 + p * 34;    // 34px → 68px on mobile
+    hole.style.width = size + "px";
+    hole.style.height = size + "px";
+  }
+
+  window.addEventListener("scroll", updateHole, { passive: true });
+  window.addEventListener("resize", function () { recalcMax(); updateHole(); });
+  recalcMax();
+  updateHole();
+
+  // ── Tape sound ──────────────────────────────────────────────────
+  var toggle = document.getElementById("tapeToggle");
+  var label = toggle.querySelector(".tape-label");
+  var ctx = null;
+  var nodes = null;
+
+  function makeTapeSound() {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    ctx = new AC();
+
+    // Master volume — very low, background presence
+    var master = ctx.createGain();
+    master.gain.value = 0;
+    master.connect(ctx.destination);
+
+    // 1. Hiss: white noise through a bandpass, high shelf rolled off
+    var bufferSize = ctx.sampleRate * 2;
+    var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    var data = buffer.getChannelData(0);
+    for (var i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+    var noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    noise.loop = true;
+
+    var bandpass = ctx.createBiquadFilter();
+    bandpass.type = "bandpass";
+    bandpass.frequency.value = 3200;
+    bandpass.Q.value = 0.6;
+
+    var hissGain = ctx.createGain();
+    hissGain.gain.value = 0.35;
+
+    noise.connect(bandpass);
+    bandpass.connect(hissGain);
+    hissGain.connect(master);
+
+    // 2. Slow mechanical wobble — a low sine that modulates the hiss gain
+    var wobble = ctx.createOscillator();
+    wobble.type = "sine";
+    wobble.frequency.value = 2.2;    // rotations per second
+
+    var wobbleGain = ctx.createGain();
+    wobbleGain.gain.value = 0.10;
+
+    wobble.connect(wobbleGain);
+    wobbleGain.connect(hissGain.gain);
+
+    // 3. Low motor whir — quiet sine underneath
+    var motor = ctx.createOscillator();
+    motor.type = "sine";
+    motor.frequency.value = 58;      // low hum
+
+    var motorGain = ctx.createGain();
+    motorGain.gain.value = 0.06;
+    motor.connect(motorGain);
+    motorGain.connect(master);
+
+    noise.start();
+    wobble.start();
+    motor.start();
+
+    nodes = { master: master, noise: noise, wobble: wobble, motor: motor };
+  }
+
+  function fadeTo(target, time) {
+    if (!nodes) return;
+    var now = ctx.currentTime;
+    nodes.master.gain.cancelScheduledValues(now);
+    nodes.master.gain.setValueAtTime(nodes.master.gain.value, now);
+    nodes.master.gain.linearRampToValueAtTime(target, now + time);
+  }
+
+  function toggleTape() {
+    var on = toggle.classList.toggle("on");
+    label.textContent = on ? "Tape on" : "Tape off";
+    if (!ctx) makeTapeSound();
+    if (ctx.state === "suspended") ctx.resume();
+    fadeTo(on ? 0.14 : 0, on ? 0.6 : 0.4);
+  }
+
+  toggle.addEventListener("click", toggleTape);
+
+  // Optional: gentle autostart on first scroll/click if user didn't toggle.
+  // Left off intentionally — the toggle is the way in. Commented out here
+  // so you can enable it if you change your mind:
+  //
+  // document.addEventListener("click", function () {
+  //   if (!ctx) { makeTapeSound(); ctx.resume(); fadeTo(0.14, 0.8);
+  //     toggle.classList.add("on"); label.textContent = "Tape on"; }
+  // }, { once: true });
+})();
+</script>
 
 </body>
 </html>
