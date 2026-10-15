@@ -13,6 +13,7 @@
     --ink: #1a1712;
     --muted: #6a6458;
     --line: #e6e1d4;
+    --accent: #8b2d2d;
   }
   *, *::before, *::after { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -24,7 +25,51 @@
     font-size: 15px;
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
+    position: relative;
   }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.22;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.5 0 0 0 0 0.42 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(130% 85% at 50% 45%,
+        rgba(250, 248, 243, 0) 0%,
+        rgba(240, 232, 214, 0.06) 60%,
+        rgba(220, 205, 175, 0.14) 90%,
+        rgba(200, 185, 155, 0.20) 100%);
+  }
+
+  /* Debris — forgotten objects drift in the margins */
+  .debris {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .debris-item {
+    position: absolute;
+    opacity: 0.85;
+    transition: opacity 0.8s ease, transform 2.5s ease;
+  }
+
+  /* Keep content above the atmospheric layers */
+  .wrap { position: relative; z-index: 2; }
+  .black-hole { z-index: 10; }
+  .tape-toggle { z-index: 11; }
 
   /* ── Black hole ─────────────────────────────────────────── */
   .black-hole {
@@ -39,6 +84,7 @@
     pointer-events: none;
     transition: width 0.3s ease, height 0.3s ease;
     will-change: width, height;
+
   }
 
   /* ── Tape toggle ────────────────────────────────────────── */
@@ -48,41 +94,75 @@
     right: 34px;
     z-index: 11;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 5px 10px;
-    background: rgba(250, 248, 243, 0.85);
+    gap: 4px;
+    padding: 6px 8px 5px;
+    background: rgba(250, 248, 243, 0.7);
     border: 1px solid var(--line);
-    border-radius: 2px;
+    border-radius: 3px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  .tape-toggle:hover {
+    border-color: var(--muted);
+    transform: translateY(-1px);
+  }
+  .tape-toggle:active {
+    transform: translateY(1px);
+  }
+  .tape-rec {
+    width: 88px;
+    height: 62px;
+    display: block;
+  }
+  .tape-label {
     font-family: "Inter", -apple-system, sans-serif;
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--muted);
-    cursor: pointer;
-    user-select: none;
-    transition: color 0.15s ease, border-color 0.15s ease;
+    transition: color 0.15s ease;
   }
-  .tape-toggle:hover { color: var(--ink); border-color: var(--muted); }
-  .tape-toggle .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--line);
-    transition: background 0.2s ease;
+  .tape-toggle.on .tape-label { color: #8b2d2d; }
+
+  /* Reels only spin when the tape is on */
+  .tape-toggle .reel {
+    animation: none;
   }
-  .tape-toggle.on .dot {
-    background: #8b2d2d;
-    animation: tapePulse 2s ease-in-out infinite;
+  .tape-toggle.on .reel-left {
+    animation: reelSpin 3.5s linear infinite;
   }
-  @keyframes tapePulse {
+  .tape-toggle.on .reel-right {
+    animation: reelSpin 2.4s linear infinite;
+  }
+  @keyframes reelSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  /* LED turns red when playing */
+  .tape-toggle .led {
+    transition: fill 0.25s ease, filter 0.25s ease;
+  }
+  .tape-toggle.on .led {
+    fill: #c04030;
+    filter: drop-shadow(0 0 3px rgba(200, 60, 40, 0.7));
+    animation: ledPulse 2.2s ease-in-out infinite;
+  }
+  @keyframes ledPulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
+    50% { opacity: 0.65; }
   }
 
   @media (max-width: 640px) {
     .black-hole { top: 16px; right: 16px; width: 34px; height: 34px; }
-    .tape-toggle { top: 60px; right: 16px; font-size: 0.55rem; padding: 4px 8px; }
+    .tape-toggle { top: 56px; right: 12px; padding: 4px 6px 3px; }
+    .tape-rec { width: 60px; height: 42px; }
+    .tape-label { font-size: 0.48rem; letter-spacing: 0.14em; }
+    .debris-item { transform: scale(0.7); transform-origin: top left; }
   }
 
   .wrap { max-width: 720px; margin: 0 auto; padding: 5rem 1.5rem 6rem; }
@@ -116,21 +196,6 @@
     color: var(--muted);
     margin: 0 0 1rem;
   }
-
-  /* ── Four chairs ────────────────────────────────────────── */
-  .chairs {
-    display: flex;
-    gap: 8px;
-    color: var(--line);
-    margin: 0 0 1rem;
-    min-height: 20px;
-  }
-  .chair {
-    width: 12px;
-    height: 20px;
-    transition: opacity 0.4s ease;
-  }
-  .chair.gone { opacity: 0; }
 
   .log {
     font-family: "Inter", -apple-system, sans-serif;
@@ -174,6 +239,18 @@
     50% { opacity: 0; }
   }
 
+  sup.mark {
+    font-family: "EB Garamond", Georgia, serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 0.62em;
+    color: #8b2d2d;
+    vertical-align: super;
+    line-height: 0;
+    margin-left: 1px;
+    letter-spacing: 0;
+  }
+
   .afterword {
     margin-top: 5rem;
     padding-top: 2.5rem;
@@ -198,9 +275,233 @@
 </head>
 <body>
 
+<div class="debris" id="debris" aria-hidden="true">
+
+  <div class="debris-item" data-chair="1" style="top:8%;left:3%;width:64px;height:76px;">
+    <svg viewBox="0 0 70 82" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="woodSeat_1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#a07a48"/>
+          <stop offset="0.5" stop-color="#7a5830"/>
+          <stop offset="1" stop-color="#503a1e"/>
+        </linearGradient>
+        <linearGradient id="woodLeg_1" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#8a6538"/>
+          <stop offset="0.5" stop-color="#5a3e22"/>
+          <stop offset="1" stop-color="#3a2814"/>
+        </linearGradient>
+        <linearGradient id="woodBack_1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#b08858"/>
+          <stop offset="1" stop-color="#6a4a28"/>
+        </linearGradient>
+      </defs>
+      <ellipse cx="35" cy="79" rx="22" ry="2.5" fill="rgba(0,0,0,0.15)"/>
+      <rect x="8" y="6" width="7" height="34" rx="1" fill="url(#woodBack_1)"/>
+      <rect x="55" y="6" width="7" height="34" rx="1" fill="url(#woodBack_1)"/>
+      <rect x="14" y="12" width="42" height="4" rx="1" fill="url(#woodBack_1)"/>
+      <rect x="14" y="20" width="42" height="3.5" rx="1" fill="url(#woodBack_1)"/>
+      <rect x="14" y="28" width="42" height="3.5" rx="1" fill="url(#woodBack_1)"/>
+      <rect x="6" y="38" width="58" height="8" rx="1.5" fill="url(#woodSeat_1)"/>
+      <rect x="6" y="38" width="58" height="1.5" fill="rgba(255,220,160,0.35)"/>
+      <rect x="10" y="46" width="6" height="32" rx="1" fill="url(#woodLeg_1)"/>
+      <rect x="54" y="46" width="6" height="32" rx="1" fill="url(#woodLeg_1)"/>
+      <rect x="10" y="60" width="50" height="3" rx="1" fill="url(#woodLeg_1)"/>
+      <path d="M 22 22 L 40 22" stroke="rgba(60,40,20,0.5)" stroke-width="0.5"/>
+    </svg>
+  </div>
+
+  <div class="debris-item" data-chair="2" style="top:32%;right:3.5%;width:60px;height:72px;">
+    <svg viewBox="0 0 70 82" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="woodSeat_2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#a07a48"/>
+          <stop offset="0.5" stop-color="#7a5830"/>
+          <stop offset="1" stop-color="#503a1e"/>
+        </linearGradient>
+        <linearGradient id="woodLeg_2" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#8a6538"/>
+          <stop offset="0.5" stop-color="#5a3e22"/>
+          <stop offset="1" stop-color="#3a2814"/>
+        </linearGradient>
+        <linearGradient id="woodBack_2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#b08858"/>
+          <stop offset="1" stop-color="#6a4a28"/>
+        </linearGradient>
+      </defs>
+      <ellipse cx="35" cy="79" rx="22" ry="2.5" fill="rgba(0,0,0,0.15)"/>
+      <rect x="8" y="6" width="7" height="34" rx="1" fill="url(#woodBack_2)"/>
+      <rect x="55" y="6" width="7" height="34" rx="1" fill="url(#woodBack_2)"/>
+      <rect x="14" y="12" width="42" height="4" rx="1" fill="url(#woodBack_2)"/>
+      <rect x="14" y="20" width="42" height="3.5" rx="1" fill="url(#woodBack_2)"/>
+      <rect x="14" y="28" width="42" height="3.5" rx="1" fill="url(#woodBack_2)"/>
+      <rect x="6" y="38" width="58" height="8" rx="1.5" fill="url(#woodSeat_2)"/>
+      <rect x="6" y="38" width="58" height="1.5" fill="rgba(255,220,160,0.35)"/>
+      <rect x="10" y="46" width="6" height="32" rx="1" fill="url(#woodLeg_2)"/>
+      <rect x="54" y="46" width="6" height="32" rx="1" fill="url(#woodLeg_2)"/>
+      <rect x="10" y="60" width="50" height="3" rx="1" fill="url(#woodLeg_2)"/>
+      <path d="M 22 22 L 40 22" stroke="rgba(60,40,20,0.5)" stroke-width="0.5"/>
+    </svg>
+  </div>
+
+  <div class="debris-item" data-chair="3" style="top:62%;left:3.5%;width:66px;height:78px;">
+    <svg viewBox="0 0 70 82" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="woodSeat_3" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#a07a48"/>
+          <stop offset="0.5" stop-color="#7a5830"/>
+          <stop offset="1" stop-color="#503a1e"/>
+        </linearGradient>
+        <linearGradient id="woodLeg_3" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#8a6538"/>
+          <stop offset="0.5" stop-color="#5a3e22"/>
+          <stop offset="1" stop-color="#3a2814"/>
+        </linearGradient>
+        <linearGradient id="woodBack_3" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#b08858"/>
+          <stop offset="1" stop-color="#6a4a28"/>
+        </linearGradient>
+      </defs>
+      <ellipse cx="35" cy="79" rx="22" ry="2.5" fill="rgba(0,0,0,0.15)"/>
+      <rect x="8" y="6" width="7" height="34" rx="1" fill="url(#woodBack_3)"/>
+      <rect x="55" y="6" width="7" height="34" rx="1" fill="url(#woodBack_3)"/>
+      <rect x="14" y="12" width="42" height="4" rx="1" fill="url(#woodBack_3)"/>
+      <rect x="14" y="20" width="42" height="3.5" rx="1" fill="url(#woodBack_3)"/>
+      <rect x="14" y="28" width="42" height="3.5" rx="1" fill="url(#woodBack_3)"/>
+      <rect x="6" y="38" width="58" height="8" rx="1.5" fill="url(#woodSeat_3)"/>
+      <rect x="6" y="38" width="58" height="1.5" fill="rgba(255,220,160,0.35)"/>
+      <rect x="10" y="46" width="6" height="32" rx="1" fill="url(#woodLeg_3)"/>
+      <rect x="54" y="46" width="6" height="32" rx="1" fill="url(#woodLeg_3)"/>
+      <rect x="10" y="60" width="50" height="3" rx="1" fill="url(#woodLeg_3)"/>
+      <path d="M 22 22 L 40 22" stroke="rgba(60,40,20,0.5)" stroke-width="0.5"/>
+    </svg>
+  </div>
+
+  <div class="debris-item" data-chair="4" style="top:86%;right:3%;width:62px;height:74px;">
+    <svg viewBox="0 0 70 82" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="woodSeat_4" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#a07a48"/>
+          <stop offset="0.5" stop-color="#7a5830"/>
+          <stop offset="1" stop-color="#503a1e"/>
+        </linearGradient>
+        <linearGradient id="woodLeg_4" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#8a6538"/>
+          <stop offset="0.5" stop-color="#5a3e22"/>
+          <stop offset="1" stop-color="#3a2814"/>
+        </linearGradient>
+        <linearGradient id="woodBack_4" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#b08858"/>
+          <stop offset="1" stop-color="#6a4a28"/>
+        </linearGradient>
+      </defs>
+      <ellipse cx="35" cy="79" rx="22" ry="2.5" fill="rgba(0,0,0,0.15)"/>
+      <rect x="8" y="6" width="7" height="34" rx="1" fill="url(#woodBack_4)"/>
+      <rect x="55" y="6" width="7" height="34" rx="1" fill="url(#woodBack_4)"/>
+      <rect x="14" y="12" width="42" height="4" rx="1" fill="url(#woodBack_4)"/>
+      <rect x="14" y="20" width="42" height="3.5" rx="1" fill="url(#woodBack_4)"/>
+      <rect x="14" y="28" width="42" height="3.5" rx="1" fill="url(#woodBack_4)"/>
+      <rect x="6" y="38" width="58" height="8" rx="1.5" fill="url(#woodSeat_4)"/>
+      <rect x="6" y="38" width="58" height="1.5" fill="rgba(255,220,160,0.35)"/>
+      <rect x="10" y="46" width="6" height="32" rx="1" fill="url(#woodLeg_4)"/>
+      <rect x="54" y="46" width="6" height="32" rx="1" fill="url(#woodLeg_4)"/>
+      <rect x="10" y="60" width="50" height="3" rx="1" fill="url(#woodLeg_4)"/>
+      <path d="M 22 22 L 40 22" stroke="rgba(60,40,20,0.5)" stroke-width="0.5"/>
+    </svg>
+  </div>
+
+</div>
+
 <div class="black-hole" id="blackHole" aria-hidden="true"></div>
 <button class="tape-toggle" id="tapeToggle" type="button" aria-label="Toggle tape sound">
-  <span class="dot"></span><span class="tape-label">Tape off</span>
+  <svg class="tape-rec" viewBox="0 0 88 62" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="deckBody" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#e8e0cc"/>
+        <stop offset="0.45" stop-color="#bdb29a"/>
+        <stop offset="0.5" stop-color="#a89d84"/>
+        <stop offset="1" stop-color="#7a7058"/>
+      </linearGradient>
+      <linearGradient id="deckTop" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f4edd8"/>
+        <stop offset="1" stop-color="#d4c9b0"/>
+      </linearGradient>
+      <linearGradient id="windowGlass" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#2a2620"/>
+        <stop offset="0.5" stop-color="#0f0c08"/>
+        <stop offset="1" stop-color="#1e1a14"/>
+      </linearGradient>
+      <radialGradient id="reelHub" cx="0.35" cy="0.3" r="0.7">
+        <stop offset="0" stop-color="#f2ead2"/>
+        <stop offset="0.6" stop-color="#b8ad92"/>
+        <stop offset="1" stop-color="#5a5040"/>
+      </radialGradient>
+      <linearGradient id="btnTop" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#e8e0cc"/>
+        <stop offset="0.5" stop-color="#a89d84"/>
+        <stop offset="1" stop-color="#6a6048"/>
+      </linearGradient>
+      <linearGradient id="btnFace" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#a89d84"/>
+        <stop offset="1" stop-color="#5a5040"/>
+      </linearGradient>
+    </defs>
+
+    <!-- shadow under the deck -->
+    <ellipse cx="44" cy="60" rx="34" ry="2.5" fill="rgba(0,0,0,0.18)"/>
+
+    <!-- top face (perspective edge) -->
+    <path d="M 6 4 L 82 4 L 86 8 L 2 8 Z" fill="url(#deckTop)"/>
+
+    <!-- side edge -->
+    <path d="M 2 8 L 6 4 L 6 54 L 2 58 Z" fill="#8a8068" opacity="0.6"/>
+    <path d="M 82 4 L 86 8 L 86 58 L 82 54 Z" fill="#5a5040" opacity="0.5"/>
+
+    <!-- front body -->
+    <rect x="6" y="8" width="76" height="46" rx="1.5" fill="url(#deckBody)"/>
+
+    <!-- top highlight -->
+    <rect x="7" y="9" width="74" height="1.5" fill="rgba(255,255,255,0.5)"/>
+
+    <!-- cassette window -->
+    <rect x="12" y="14" width="64" height="20" rx="1.5" fill="url(#windowGlass)" stroke="rgba(0,0,0,0.6)" stroke-width="0.8"/>
+    <rect x="13" y="15" width="62" height="1" fill="rgba(255,255,255,0.08)"/>
+
+    <!-- tape reels (spin when playing) -->
+    <g class="reel reel-left" style="transform-origin: 30px 24px;">
+      <circle cx="30" cy="24" r="7.5" fill="#4a4030"/>
+      <circle cx="30" cy="24" r="6" fill="#8a7048"/>
+      <circle cx="30" cy="24" r="2.2" fill="url(#reelHub)"/>
+      <circle cx="30" cy="24" r="0.8" fill="#2a2418"/>
+    </g>
+    <g class="reel reel-right" style="transform-origin: 58px 24px;">
+      <circle cx="58" cy="24" r="7.5" fill="#4a4030"/>
+      <circle cx="58" cy="24" r="4" fill="#8a7048"/>
+      <circle cx="58" cy="24" r="2.2" fill="url(#reelHub)"/>
+      <circle cx="58" cy="24" r="0.8" fill="#2a2418"/>
+    </g>
+
+    <!-- LED indicator -->
+    <circle class="led" cx="44" cy="38.5" r="1.6" fill="#3a3020" stroke="rgba(0,0,0,0.4)" stroke-width="0.4"/>
+
+    <!-- buttons row -->
+    <g class="buttons">
+      <rect x="14" y="42" width="13" height="9" rx="1" fill="url(#btnFace)" stroke="rgba(0,0,0,0.35)" stroke-width="0.5"/>
+      <rect x="14" y="42" width="13" height="2" rx="1" fill="url(#btnTop)"/>
+      <rect x="30" y="42" width="13" height="9" rx="1" fill="url(#btnFace)" stroke="rgba(0,0,0,0.35)" stroke-width="0.5"/>
+      <rect x="30" y="42" width="13" height="2" rx="1" fill="url(#btnTop)"/>
+      <rect x="46" y="42" width="13" height="9" rx="1" fill="url(#btnFace)" stroke="rgba(0,0,0,0.35)" stroke-width="0.5"/>
+      <rect x="46" y="42" width="13" height="2" rx="1" fill="url(#btnTop)"/>
+      <rect x="62" y="42" width="13" height="9" rx="1" fill="url(#btnFace)" stroke="rgba(0,0,0,0.35)" stroke-width="0.5"/>
+      <rect x="62" y="42" width="13" height="2" rx="1" fill="url(#btnTop)"/>
+    </g>
+
+    <!-- screw detail -->
+    <circle cx="9" cy="11" r="0.8" fill="#5a5040"/>
+    <circle cx="79" cy="11" r="0.8" fill="#5a5040"/>
+    <circle cx="9" cy="51" r="0.8" fill="#5a5040"/>
+    <circle cx="79" cy="51" r="0.8" fill="#5a5040"/>
+  </svg>
+  <span class="tape-label">Tape off</span>
 </button>
 
 <div class="wrap">
@@ -209,12 +510,6 @@
   <header>
     <h1>Four Chairs</h1>
     <p class="byline">Lorenzo Marco Besana</p>
-    <div class="chairs" id="chairs" aria-hidden="true">
-      <svg class="chair" viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="10" height="9" rx="0.5"/><line x1="2.5" y1="10" x2="2.5" y2="19"/><line x1="9.5" y1="10" x2="9.5" y2="19"/></svg>
-      <svg class="chair" viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="10" height="9" rx="0.5"/><line x1="2.5" y1="10" x2="2.5" y2="19"/><line x1="9.5" y1="10" x2="9.5" y2="19"/></svg>
-      <svg class="chair" viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="10" height="9" rx="0.5"/><line x1="2.5" y1="10" x2="2.5" y2="19"/><line x1="9.5" y1="10" x2="9.5" y2="19"/></svg>
-      <svg class="chair" viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="10" height="9" rx="0.5"/><line x1="2.5" y1="10" x2="2.5" y2="19"/><line x1="9.5" y1="10" x2="9.5" y2="19"/></svg>
-    </div>
   </header>
 
   <div class="log">
@@ -227,7 +522,7 @@
     <p class="scene-head">EXT. BUILDING - DAY</p>
 
     <p class="action">It's cold.</p>
-    <p class="action">There are four chairs and three people in front of a door.</p>
+    <p class="action">There are four<sup class="mark">4</sup> chairs and three people in front of a door.</p>
     <p class="action">The man [RE: Man] and the younger man [RE: Student] sit in front of each other. The woman [RE: Supervisor] stands behind the Man.</p>
     <p class="action">The Supervisor and the Man wear a winter jacket, while the Student is in a T-shirt.</p>
     <p class="action">The Man and the Student smoke with their head to the ground. The Supervisor is observing the Student.</p>
@@ -352,7 +647,7 @@
     <p class="character">Student</p>
     <p class="dialogue">Does it ever hurt?</p>
 
-    <p class="action">The man closes his fist, closely observing his four fingers.</p>
+    <p class="action">The man closes his fist, closely observing his four<sup class="mark">4</sup> fingers.</p>
 
     <p class="character">Supervisor (O.C.)</p>
     <p class="dialogue">What the fuck is this?</p>
@@ -398,7 +693,7 @@
 
     <p class="character">Supervisor</p>
     <p class="paren">(catching her breath)</p>
-    <p class="dialogue">Alright. Alright. All jokes aside. This anomaly might be a unicum in human history. We may have never seen anything like this before.</p>
+    <p class="dialogue"><em data-typewriter>Alright. Alright. All jokes aside. This anomaly might be a unicum in human history. We may have never seen anything like this before.</em></p>
 
     <p class="action">The Supervisor stops the recording.</p>
 
@@ -414,12 +709,12 @@
     <p class="action">She starts going through the table.</p>
 
     <p class="character">Supervisor (CONT'D)</p>
-    <p class="dialogue">Four cups, four pairs of gloves.</p>
+    <p class="dialogue">Four<sup class="mark">4</sup> cups, four<sup class="mark">4</sup> pairs of gloves.</p>
 
     <p class="action">She points in a corner.</p>
 
     <p class="character">Supervisor (CONT'D)</p>
-    <p class="dialogue">Those random shoes. What else do you have in your backpack? A fourth toothbrush? It doesn't even make sense.</p>
+    <p class="dialogue">Those random shoes. What else do you have in your backpack? A fourth<sup class="mark">4</sup> toothbrush? It doesn't even make sense.</p>
 
     <p class="action">She lifts her right hand. She is wearing a wedding ring.</p>
 
@@ -450,7 +745,7 @@
     <p class="action">She steps back.</p>
 
     <p class="character">Man</p>
-    <p class="dialogue">There are four chairs outside, Nora.</p>
+    <p class="dialogue">There are four<sup class="mark">3</sup> chairs outside, Nora.</p>
 
     <p class="character">Supervisor</p>
     <p class="dialogue">It's not possible.</p>
@@ -469,7 +764,7 @@
 
   </div>
 
-  <p class="afterword" id="afterword">It doesn't emit any sound.<br>It doesn't move.</p>
+  <p class="afterword" id="afterword"><span id="afterwordLine1">It doesn't emit any sound.</span><br><span id="afterwordLine2">It doesn't move.</span></p>
 
 </div>
 
@@ -497,6 +792,26 @@
   window.addEventListener("resize", function () { recalcMax(); updateHole(); });
   recalcMax();
   updateHole();
+
+  // ── One chair goes missing at the end ────────────────────
+  var afterwordEl = document.getElementById("afterword");
+  var chairsRemoved = false;
+  if (afterwordEl) {
+    var chairObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && !chairsRemoved) {
+          chairsRemoved = true;
+          var chair4 = document.querySelector('.debris-item[data-chair="4"]');
+          if (chair4) {
+            // Slow, quiet fade over 3s. No announcement.
+            chair4.classList.add("gone");
+          }
+          chairObs.disconnect();
+        }
+      });
+    }, { threshold: 0.4 });
+    chairObs.observe(afterwordEl);
+  }
 
   // ── 2. Tape sound ──────────────────────────────────────────────
   var toggle = document.getElementById("tapeToggle");
@@ -651,8 +966,8 @@
 
       var g = ctx.createGain();
       g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.55, t + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+      g.gain.linearRampToValueAtTime(1.4, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
 
       osc.connect(bp);
       bp.connect(g);
@@ -663,63 +978,81 @@
     }
   }
 
-  var laughed = false;
   var silentLine = document.getElementById("tape-silent");
+  var lastLaughAt = 0;
+  var LAUGH_COOLDOWN = 4000;   // ms — don't repeat if you bounce past quickly
+  var laughArmed = true;
+
   if (silentLine) {
     var laughObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        if (entry.isIntersecting && !laughed) {
-          laughed = true;
-          // Only if the tape is actually on
-          if (toggle.classList.contains("on")) {
-            // Silence for a beat, then the laugh, then it's gone
-            window.setTimeout(function () { playLaugh(); }, 1600);
+        if (entry.isIntersecting) {
+          if (laughArmed && toggle.classList.contains("on")) {
+            var now = Date.now();
+            if (now - lastLaughAt > LAUGH_COOLDOWN) {
+              lastLaughAt = now;
+              laughArmed = false;
+              window.setTimeout(function () {
+                playLaugh();
+                // Re-arm only after the reader has scrolled away and come back
+                window.setTimeout(function () { laughArmed = true; }, LAUGH_COOLDOWN);
+              }, 1600);
+            }
           }
-          laughObserver.disconnect();
         }
       });
     }, { threshold: 0.6 });
     laughObserver.observe(silentLine);
   }
 
-  // ── 5. Chair disappears at the ring speech, fourth returns at the end
-  var chairs = document.querySelectorAll(".chair");
-  var ringSpeech = document.getElementById("ring-speech");
+  // ── 5. The afterword decays ────────────────────────────────────
+  // Stages of loss. Each time the reader returns to the afterword after
+  // being away for at least COOLDOWN ms, one more word goes.
   var afterword = document.getElementById("afterword");
-  var chairGone = false;
-  var chairBack = false;
+  var l1 = document.getElementById("afterwordLine1");
+  var l2 = document.getElementById("afterwordLine2");
 
-  if (ringSpeech && chairs.length >= 4) {
-    var ringObserver = new IntersectionObserver(function (entries) {
+  var STAGES = [
+    { l1: "It doesn't emit any sound.", l2: "It doesn't move." },   // start
+    { l1: "It doesn't emit any sound.", l2: "It doesn't." },        // one gone
+    { l1: "It doesn't emit any sound.", l2: "" },                    // two gone
+    { l1: "It doesn't.",                l2: "" },                    // three gone
+    { l1: "",                            l2: "" }                    // gone
+  ];
+
+  var stage = 0;
+  var visible = false;
+  var lastLeftAt = 0;
+  var COOLDOWN = 8000;   // ms away before another word can go
+
+  if (afterword && l1 && l2) {
+    var obs = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        if (entry.isIntersecting && !chairGone) {
-          chairGone = true;
-          chairs[3].classList.add("gone");
-          ringObserver.disconnect();
+        if (entry.isIntersecting) {
+          if (!visible) {
+            // Just arrived. If the reader has been away long enough, advance.
+            visible = true;
+            var away = Date.now() - lastLeftAt;
+            if (lastLeftAt > 0 && away >= COOLDOWN && stage < STAGES.length - 1) {
+              stage++;
+              var s2 = STAGES[stage];
+              l1.textContent = s2.l1;
+              l2.textContent = s2.l2;
+              // If both lines are empty, hide the paragraph entirely
+              if (!s2.l1 && !s2.l2) {
+                afterword.style.display = "none";
+              }
+            }
+          }
+        } else {
+          if (visible) {
+            visible = false;
+            lastLeftAt = Date.now();
+          }
         }
       });
     }, { threshold: 0.5 });
-    ringObserver.observe(ringSpeech);
-  }
-
-  if (afterword) {
-    var endObserver = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting && !chairBack) {
-          chairBack = true;
-          // Bring the fourth chair back, empty, in a different place
-          var fourth = chairs[3];
-          fourth.classList.remove("gone");
-          fourth.style.opacity = "0";
-          // Detach it and place it at the end of the row
-          var row = document.getElementById("chairs");
-          row.appendChild(fourth);
-          window.requestAnimationFrame(function () { fourth.style.opacity = ""; });
-          endObserver.disconnect();
-        }
-      });
-    }, { threshold: 0.4 });
-    endObserver.observe(afterword);
+    obs.observe(afterword);
   }
 })();
 </script>
