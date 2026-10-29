@@ -4,16 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d0805">
-<title>Read — Screenplays</title>
+<title>Screenplays</title>
 <style>
 :root {
   --bg: #0d0805;
   --ink: #e8dcc5;
   --muted: #8a7a5c;
   --accent: #d4a04a;
-  --line: #2a2018;
-  --wood: #4a2e18;
-  --wood-shadow: #1a0d05;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -24,7 +21,7 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   background: var(--bg);
-  background-image: radial-gradient(ellipse at 50% 0%, rgba(212,160,74,0.09), transparent 60%);
+  background-image: radial-gradient(ellipse at 50% 0%, rgba(212,160,74,0.10), transparent 60%);
   color: var(--ink);
   font-family: "EB Garamond", Georgia, "Iowan Old Style", serif;
   font-size: 18px;
@@ -52,9 +49,9 @@ body {
   margin: 0;
 }
 
-.shelf { margin-bottom: 3rem; }
+.drawer { margin-bottom: 3rem; }
 
-.shelf-title {
+.drawer-label {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 0.72rem;
   font-weight: 500;
@@ -65,116 +62,185 @@ body {
   padding-left: 0.15rem;
   transition: color 0.5s ease;
 }
-.shelf.open .shelf-title { color: var(--accent); }
+.drawer.open .drawer-label { color: var(--accent); }
 
-.shelf-stage { position: relative; }
+.drawer-frame {
+  position: relative;
+  padding: 10px;
+  background: linear-gradient(180deg, #2a1a0e 0%, #1a0d05 100%);
+  border: 1px solid rgba(212, 160, 74, 0.22);
+  border-radius: 4px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.65), inset 0 1px 0 rgba(232,220,197,0.06);
+}
 
-.books {
+.drawer-inner {
+  position: relative;
+  padding: 20px 10px 10px;
+  background: #0a0603;
+  border-radius: 2px;
+  box-shadow: inset 0 6px 20px rgba(0,0,0,0.9);
+  min-height: 260px;
+}
+
+.folders {
   display: flex;
-  gap: 5px;
+  gap: 6px;
   align-items: flex-end;
-  min-height: 230px;
-  padding: 0 0.15rem;
+  padding: 0 2px;
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-snap-type: x proximity;
 }
-.books::-webkit-scrollbar { display: none; }
+.folders::-webkit-scrollbar { display: none; }
 
-.book {
+.folder {
   flex: 0 0 auto;
-  width: 56px;
-  height: 210px;
-  display: block;
+  width: 100px;
+  height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+  pointer-events: none;
+  scroll-snap-align: start;
+  transition: transform 0.35s ease;
   text-decoration: none;
   color: var(--ink);
-  border-radius: 2px 2px 0 0;
-  border: 1px solid rgba(255,255,255,0.06);
-  position: relative;
-  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
-  scroll-snap-align: start;
-  overflow: hidden;
-  pointer-events: none;
 }
-.shelf.open .book {
-  pointer-events: auto;
-}
-.shelf.open .book:hover,
-.shelf.open .book:focus-visible {
+.drawer.open .folder { pointer-events: auto; }
+.drawer.open .folder:hover,
+.drawer.open .folder:focus-visible {
   transform: translateY(-10px);
-  box-shadow: 0 0 24px rgba(212, 160, 74, 0.35);
-  border-color: rgba(212, 160, 74, 0.5);
   outline: none;
 }
-.shelf.open .book:focus-visible {
-  box-shadow: 0 0 0 2px var(--accent), 0 0 24px rgba(212, 160, 74, 0.35);
+.drawer.open .folder:focus-visible .folder-body {
+  box-shadow: 0 0 0 2px var(--accent), 0 0 24px rgba(212, 160, 74, 0.4);
 }
 
-.book-spine {
-  position: absolute;
-  top: 10px;
-  bottom: 10px;
-  left: 4px;
-  right: 4px;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  font-family: "EB Garamond", Georgia, serif;
-  font-size: 0.82rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  color: rgba(232, 220, 197, 0.92);
-  line-height: 1.15;
-  padding: 0.5rem 0.15rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.folder-tab {
+  width: 60%;
+  height: 14px;
+  background: var(--fc1, #3a2510);
+  border: 1px solid rgba(0,0,0,0.5);
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+  position: relative;
+  z-index: 2;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.folder:nth-child(3n+2) .folder-tab { align-self: center; }
+.folder:nth-child(3n+3) .folder-tab { align-self: flex-end; }
+
+.folder-body {
+  width: 100%;
+  flex: 1;
+  background: linear-gradient(180deg, var(--fc1, #3a2510), var(--fc2, #1a0d05));
+  border: 1px solid rgba(0,0,0,0.5);
+  border-radius: 0 3px 3px 3px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 2px 5px rgba(0,0,0,0.45);
+  padding: 12px 9px 9px;
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+.folder-body::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  right: 9px;
+  top: 44%;
+  height: 1px;
+  background: rgba(0,0,0,0.22);
 }
 
-.frost {
+.folder-title {
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  color: rgba(232, 220, 197, 0.96);
+  text-wrap: balance;
+  position: relative;
+  z-index: 1;
+}
+
+.folder-pages {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.56rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(232, 220, 197, 0.55);
+  position: relative;
+  z-index: 1;
+}
+
+.glass {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   padding: 0;
-  border: 1px solid rgba(232, 220, 197, 0.1);
-  border-radius: 3px;
-  background: linear-gradient(180deg, rgba(13,8,5,0.55), rgba(13,8,5,0.72));
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: inset 0 0 60px rgba(0,0,0,0.45), inset 0 0 15px rgba(232,220,197,0.05);
+  border: 1px solid rgba(232, 220, 197, 0.18);
+  border-radius: 2px;
+  background:
+    rgba(232, 220, 197, 0.025);
+  backdrop-filter: blur(2.5px) saturate(1.2);
+  -webkit-backdrop-filter: blur(2.5px) saturate(1.2);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
   cursor: pointer;
-  transition: opacity 0.9s ease, visibility 0.9s ease;
+  transition: backdrop-filter 0.55s ease, background 0.55s ease, border-color 0.3s ease;
+  z-index: 10;
 }
-.frost:hover { border-color: rgba(212, 160, 74, 0.4); }
-.frost:focus-visible {
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg,
+    transparent 35%,
+    rgba(255, 250, 240, 0.10) 47%,
+    rgba(255, 250, 240, 0.04) 55%,
+    transparent 70%);
+  pointer-events: none;
+  border-radius: inherit;
+  transition: opacity 0.55s ease;
+}
+.glass:hover { border-color: rgba(212, 160, 74, 0.5); }
+.glass:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-.shelf.open .frost {
-  opacity: 0.3;
+.drawer.open .glass {
+  backdrop-filter: blur(0px) saturate(1);
+  -webkit-backdrop-filter: blur(0px) saturate(1);
+  background: rgba(232, 220, 197, 0.01);
+  border-color: rgba(232, 220, 197, 0.08);
   pointer-events: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
 }
+.drawer.open .glass::before { opacity: 0; }
 
-.shelf-edge {
+.drawer-front {
+  height: 20px;
+  margin-top: 8px;
+  background: linear-gradient(180deg, #3a2510, #1a0d05);
+  border-radius: 2px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.55), inset 0 1px 0 rgba(232,220,197,0.10);
+  position: relative;
+}
+.drawer-front::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 68px;
   height: 6px;
-  background: linear-gradient(180deg, var(--wood), var(--wood-shadow));
-  border-radius: 1px;
-  margin-top: 2px;
-  box-shadow: 0 -1px 3px rgba(0,0,0,0.5), 0 3px 10px rgba(0,0,0,0.7);
-}
-
-.room-footer {
-  text-align: center;
-  margin-top: 4rem;
-  color: var(--muted);
-  font-size: 0.82rem;
-  font-style: italic;
+  background: linear-gradient(180deg, #7a5228, #3a2510);
+  border-radius: 3px;
+  box-shadow: inset 0 1px 0 rgba(232,220,197,0.20), 0 1px 2px rgba(0,0,0,0.6);
 }
 
 .card-overlay {
@@ -293,10 +359,10 @@ body {
   .room { padding-top: 2rem; }
   .room-header { margin-bottom: 2rem; }
   .room-header h1 { font-size: 1.9rem; }
-  .shelf { margin-bottom: 2.25rem; }
-  .books { min-height: 200px; }
-  .book { width: 48px; height: 180px; }
-  .book-spine { font-size: 0.76rem; }
+  .drawer { margin-bottom: 2.25rem; }
+  .drawer-inner { min-height: 230px; }
+  .folder { width: 88px; height: 200px; }
+  .folder-title { font-size: 0.78rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -311,138 +377,198 @@ body {
 <body>
 <main class="room">
   <header class="room-header">
-    <h1>Read</h1>
+    <h1>Screenplays</h1>
   </header>
 
-  <section class="shelf" data-shelf="s-to-f">
-    <h2 class="shelf-title">S-to-F</h2>
-    <div class="shelf-stage">
-      <div class="books">
-        <a class="book" href="../pdfs/s-to-f/Another_Lonely_Night.pdf.final_.pdf" target="_blank" rel="noopener"
+  <section class="drawer" data-drawer="s-to-f">
+    <h2 class="drawer-label">S-to-F</h2>
+    <div class="drawer-frame">
+      <div class="drawer-inner">
+        <div class="folders">
+        <a class="folder" href="../pdfs/s-to-f/Another_Lonely_Night.pdf.final_.pdf" target="_blank" rel="noopener"
            data-title="Another Lonely Night"
            data-label=""
            data-tagline="On a cold night in a lonesome town, a simple guy is trying to get home, but can&#39;t."
            data-pages="117"
-           style="background:linear-gradient(180deg,#2a1a10,#1a0f08);">
-          <span class="book-spine">Another Lonely Night</span>
+           style="--fc1:#4a2e18;--fc2:#2a1a0e;">
+          <span class="folder-tab" aria-hidden="true"></span>
+          <span class="folder-body">
+            <span class="folder-title">Another Lonely Night</span>
+            <span class="folder-pages">117 pp.</span>
+          </span>
         </a>
-        <a class="book" href="../pdfs/s-to-f/Four_Chairs.pdf" target="_blank" rel="noopener"
+        <a class="folder" href="../pdfs/s-to-f/Four_Chairs.pdf" target="_blank" rel="noopener"
            data-title="Four Chairs"
            data-label=""
            data-tagline="Four chairs, three people."
            data-pages="7"
-           style="background:linear-gradient(180deg,#181828,#0a0a1a);">
-          <span class="book-spine">Four Chairs</span>
+           style="--fc1:#4a3018;--fc2:#22150a;">
+          <span class="folder-tab" aria-hidden="true"></span>
+          <span class="folder-body">
+            <span class="folder-title">Four Chairs</span>
+            <span class="folder-pages">7 pp.</span>
+          </span>
         </a>
-        <a class="book" href="../pdfs/s-to-f/Fred_Greg.Vol1.pdf" target="_blank" rel="noopener"
+        <a class="folder" href="../pdfs/s-to-f/Fred_Greg.Vol1.pdf" target="_blank" rel="noopener"
            data-title="Fred &amp; Greg, Vol. 1"
            data-label=""
            data-tagline="Two guys sit at a diner."
            data-pages="11"
-           style="background:linear-gradient(180deg,#2a2018,#1a1008);">
-          <span class="book-spine">Fred &amp; Greg, Vol. 1</span>
+           style="--fc1:#281a18;--fc2:#0e0808;">
+          <span class="folder-tab" aria-hidden="true"></span>
+          <span class="folder-body">
+            <span class="folder-title">Fred &amp; Greg, Vol. 1</span>
+            <span class="folder-pages">11 pp.</span>
+          </span>
         </a>
-        <a class="book" href="../pdfs/s-to-f/SomethingLessThanTheWhole_pilot.pdf" target="_blank" rel="noopener"
+        <a class="folder" href="../pdfs/s-to-f/SomethingLessThanTheWhole_pilot.pdf" target="_blank" rel="noopener"
            data-title="Something Less Than The Whole"
            data-label="Pilot"
            data-tagline="It takes a lot more to hide a tragedy than to commit it."
            data-pages="114"
-           style="background:linear-gradient(180deg,#2a2018,#1a1008);">
-          <span class="book-spine">Something Less Than The Whole</span>
+           style="--fc1:#281a18;--fc2:#0e0808;">
+          <span class="folder-tab" aria-hidden="true"></span>
+          <span class="folder-body">
+            <span class="folder-title">Something Less Than The Whole</span>
+            <span class="folder-pages">114 pp.</span>
+          </span>
         </a>
-        <a class="book" href="../pdfs/s-to-f/The_interview_draft2.pdf" target="_blank" rel="noopener"
+        <a class="folder" href="../pdfs/s-to-f/The_interview_draft2.pdf" target="_blank" rel="noopener"
            data-title="The Interview"
            data-label=""
            data-tagline=""
            data-pages="7"
-           style="background:linear-gradient(180deg,#281820,#180a10);">
-          <span class="book-spine">The Interview</span>
+           style="--fc1:#3a2510;--fc2:#1a0d05;">
+          <span class="folder-tab" aria-hidden="true"></span>
+          <span class="folder-body">
+            <span class="folder-title">The Interview</span>
+            <span class="folder-pages">7 pp.</span>
+          </span>
         </a>
+        </div>
+        <button class="glass" type="button" aria-label="Open drawer: S-to-F" aria-expanded="false"></button>
       </div>
-      <button class="frost" type="button" aria-label="Open shelf: S-to-F" aria-expanded="false"></button>
+      <div class="drawer-front" aria-hidden="true"></div>
     </div>
-    <div class="shelf-edge" aria-hidden="true"></div>
   </section>
-  <section class="shelf" data-shelf="leftovers">
-    <h2 class="shelf-title">Leftovers</h2>
-    <div class="shelf-stage">
-      <div class="books">
-        <a class="book" href="../pdfs/leftovers/Fuor_Chairs_possible_openings_1_.pdf" target="_blank" rel="noopener"
+  <section class="drawer" data-drawer="leftovers">
+    <h2 class="drawer-label">Leftovers</h2>
+    <div class="drawer-frame">
+      <div class="drawer-inner">
+        <div class="folders">
+        <a class="folder" href="../pdfs/leftovers/Fuor_Chairs_possible_openings_1_.pdf" target="_blank" rel="noopener"
            data-title="Fuor Chairs Possible Openings"
            data-label=""
            data-tagline=""
            data-pages="9"
-           style="background:linear-gradient(180deg,#282018,#181008);">
-          <span class="book-spine">Fuor Chairs Possible Openings</span>
+           style="--fc1:#3a2a1a;--fc2:#1a1208;">
+          <span class="folder-tab" aria-hidden="true"></span>
+          <span class="folder-body">
+            <span class="folder-title">Fuor Chairs Possible Openings</span>
+            <span class="folder-pages">9 pp.</span>
+          </span>
         </a>
-        <a class="book" href="../pdfs/leftovers/Jakarta_.pdf" target="_blank" rel="noopener"
+        <a class="folder" href="../pdfs/leftovers/Jakarta_.pdf" target="_blank" rel="noopener"
            data-title="Jakarta"
            data-label=""
            data-tagline="Is it real what we dream of?"
            data-pages="141"
-           style="background:linear-gradient(180deg,#1a2018,#0a1008);">
-          <span class="book-spine">Jakarta</span>
+           style="--fc1:#382818;--fc2:#1a1008;">
+          <span class="folder-tab" aria-hidden="true"></span>
+          <span class="folder-body">
+            <span class="folder-title">Jakarta</span>
+            <span class="folder-pages">141 pp.</span>
+          </span>
         </a>
-        <a class="book" href="../pdfs/leftovers/Judy-June12.pdf" target="_blank" rel="noopener"
+        <a class="folder" href="../pdfs/leftovers/Judy-June12.pdf" target="_blank" rel="noopener"
            data-title="Judy"
            data-label=""
            data-tagline="How much damage can one more do?"
            data-pages="42"
-           style="background:linear-gradient(180deg,#282018,#181008);">
-          <span class="book-spine">Judy</span>
+           style="--fc1:#3a2a1a;--fc2:#1a1208;">
+          <span class="folder-tab" aria-hidden="true"></span>
+          <span class="folder-body">
+            <span class="folder-title">Judy</span>
+            <span class="folder-pages">42 pp.</span>
+          </span>
         </a>
-        <a class="book" href="../pdfs/leftovers/Puma.pdf" target="_blank" rel="noopener"
+        <a class="folder" href="../pdfs/leftovers/Puma.pdf" target="_blank" rel="noopener"
            data-title="Puma"
            data-label=""
            data-tagline="What happens when the hero outlives its own myth?"
            data-pages="80"
-           style="background:linear-gradient(180deg,#281820,#180a10);">
-          <span class="book-spine">Puma</span>
+           style="--fc1:#3a2510;--fc2:#1a0d05;">
+          <span class="folder-tab" aria-hidden="true"></span>
+          <span class="folder-body">
+            <span class="folder-title">Puma</span>
+            <span class="folder-pages">80 pp.</span>
+          </span>
         </a>
-        <a class="book" href="../pdfs/leftovers/SomethingLessThanTheWhole_02.pdf" target="_blank" rel="noopener"
+        <a class="folder" href="../pdfs/leftovers/SomethingLessThanTheWhole_02.pdf" target="_blank" rel="noopener"
            data-title="Something Less Than The Whole"
            data-label="Fix Your Hearts Or Die — Ep. 02"
            data-tagline="The Games."
            data-pages="28"
-           style="background:linear-gradient(180deg,#2a2018,#1a1008);">
-          <span class="book-spine">Something Less Than The Whole</span>
+           style="--fc1:#281a18;--fc2:#0e0808;">
+          <span class="folder-tab" aria-hidden="true"></span>
+          <span class="folder-body">
+            <span class="folder-title">Something Less Than The Whole</span>
+            <span class="folder-pages">28 pp.</span>
+          </span>
         </a>
-        <a class="book" href="../pdfs/leftovers/TheDoor_Draft1.pdf" target="_blank" rel="noopener"
+        <a class="folder" href="../pdfs/leftovers/TheDoor_Draft1.pdf" target="_blank" rel="noopener"
            data-title="Something Less Than The Whole"
            data-label="The Door — Ep. 04"
            data-tagline="Get in."
            data-pages="10"
-           style="background:linear-gradient(180deg,#2a2018,#1a1008);">
-          <span class="book-spine">Something Less Than The Whole</span>
+           style="--fc1:#281a18;--fc2:#0e0808;">
+          <span class="folder-tab" aria-hidden="true"></span>
+          <span class="folder-body">
+            <span class="folder-title">Something Less Than The Whole</span>
+            <span class="folder-pages">10 pp.</span>
+          </span>
         </a>
-        <a class="book" href="../pdfs/leftovers/STAINED_GLASS_-_FIRST_DRAFT_.pdf" target="_blank" rel="noopener"
+        <a class="folder" href="../pdfs/leftovers/STAINED_GLASS_-_FIRST_DRAFT_.pdf" target="_blank" rel="noopener"
            data-title="Stained Glass"
            data-label=""
            data-tagline="How much hits can your conscience take before you call it broken?"
            data-pages="33"
-           style="background:linear-gradient(180deg,#281820,#180a10);">
-          <span class="book-spine">Stained Glass</span>
+           style="--fc1:#3a2510;--fc2:#1a0d05;">
+          <span class="folder-tab" aria-hidden="true"></span>
+          <span class="folder-body">
+            <span class="folder-title">Stained Glass</span>
+            <span class="folder-pages">33 pp.</span>
+          </span>
         </a>
-        <a class="book" href="../pdfs/leftovers/The_Human_target.pdf" target="_blank" rel="noopener"
+        <a class="folder" href="../pdfs/leftovers/The_Human_target.pdf" target="_blank" rel="noopener"
            data-title="The Human Target"
            data-label=""
            data-tagline="We die to live."
            data-pages="31"
-           style="background:linear-gradient(180deg,#181828,#0a0a1a);">
-          <span class="book-spine">The Human Target</span>
+           style="--fc1:#4a3018;--fc2:#22150a;">
+          <span class="folder-tab" aria-hidden="true"></span>
+          <span class="folder-body">
+            <span class="folder-title">The Human Target</span>
+            <span class="folder-pages">31 pp.</span>
+          </span>
         </a>
-        <a class="book" href="../pdfs/leftovers/The_Void_-current_draft_2026-10-11_6_28pm.pdf" target="_blank" rel="noopener"
+        <a class="folder" href="../pdfs/leftovers/The_Void_-current_draft_2026-10-11_6_28pm.pdf" target="_blank" rel="noopener"
            data-title="The Void Current Draft 2026-10-11 6 28pm"
            data-label=""
            data-tagline=""
            data-pages="3"
-           style="background:linear-gradient(180deg,#2a2018,#1a1008);">
-          <span class="book-spine">The Void Current Draft 2026-10-11 6 28pm</span>
+           style="--fc1:#281a18;--fc2:#0e0808;">
+          <span class="folder-tab" aria-hidden="true"></span>
+          <span class="folder-body">
+            <span class="folder-title">The Void Current Draft 2026-10-11 6 28pm</span>
+            <span class="folder-pages">3 pp.</span>
+          </span>
         </a>
+        </div>
+        <button class="glass" type="button" aria-label="Open drawer: Leftovers" aria-expanded="false"></button>
       </div>
-      <button class="frost" type="button" aria-label="Open shelf: Leftovers" aria-expanded="false"></button>
+      <div class="drawer-front" aria-hidden="true"></div>
     </div>
-    <div class="shelf-edge" aria-hidden="true"></div>
   </section>
 </main>
 
@@ -469,43 +595,43 @@ body {
   var cardRead = overlay.querySelector('.card-read');
   var cardClose = overlay.querySelector('.card-close');
 
-  function openShelf(shelf) {
-    if (shelf.classList.contains('open')) return;
-    shelf.classList.add('open');
-    var frost = shelf.querySelector('.frost');
+  function openDrawer(drawer) {
+    if (drawer.classList.contains('open')) return;
+    drawer.classList.add('open');
+    var glass = drawer.querySelector('.glass');
     var wasKeyboard = false;
-    try { wasKeyboard = frost && frost.matches(':focus-visible'); }
-    catch (e) { wasKeyboard = document.activeElement === frost; }
-    if (frost) {
-      frost.setAttribute('aria-expanded', 'true');
-      frost.setAttribute('aria-hidden', 'true');
-      frost.setAttribute('tabindex', '-1');
+    try { wasKeyboard = glass && glass.matches(':focus-visible'); }
+    catch (e) { wasKeyboard = document.activeElement === glass; }
+    if (glass) {
+      glass.setAttribute('aria-expanded', 'true');
+      glass.setAttribute('aria-hidden', 'true');
+      glass.setAttribute('tabindex', '-1');
     }
     if (wasKeyboard) {
-      var firstBook = shelf.querySelector('.book');
-      if (firstBook) firstBook.focus({ preventScroll: true });
+      var firstFolder = drawer.querySelector('.folder');
+      if (firstFolder) firstFolder.focus({ preventScroll: true });
     }
   }
 
-  document.querySelectorAll('.shelf').forEach(function(shelf) {
-    var frost = shelf.querySelector('.frost');
-    if (!frost) return;
-    frost.addEventListener('click', function() { openShelf(shelf); });
-    frost.addEventListener('keydown', function(e) {
+  document.querySelectorAll('.drawer').forEach(function(drawer) {
+    var glass = drawer.querySelector('.glass');
+    if (!glass) return;
+    glass.addEventListener('click', function() { openDrawer(drawer); });
+    glass.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        openShelf(shelf);
+        openDrawer(drawer);
       }
     });
   });
 
-  function showCard(book) {
-    cardTitle.textContent = book.dataset.title || '';
-    cardLabel.textContent = book.dataset.label || '';
-    cardTagline.textContent = book.dataset.tagline || '';
-    var p = book.dataset.pages;
+  function showCard(folder) {
+    cardTitle.textContent = folder.dataset.title || '';
+    cardLabel.textContent = folder.dataset.label || '';
+    cardTagline.textContent = folder.dataset.tagline || '';
+    var p = folder.dataset.pages;
     cardPages.textContent = p ? (p + ' pp.') : '';
-    cardRead.setAttribute('href', book.getAttribute('href') || '#');
+    cardRead.setAttribute('href', folder.getAttribute('href') || '#');
     overlay.hidden = false;
     document.body.style.overflow = 'hidden';
     cardClose.focus();
@@ -516,10 +642,10 @@ body {
     document.body.style.overflow = '';
   }
 
-  document.querySelectorAll('.book').forEach(function(book) {
-    book.addEventListener('click', function(e) {
+  document.querySelectorAll('.folder').forEach(function(folder) {
+    folder.addEventListener('click', function(e) {
       e.preventDefault();
-      showCard(book);
+      showCard(folder);
     });
   });
 
