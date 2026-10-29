@@ -60,135 +60,176 @@ body {
 }
 .cabinet-wrap.open .cabinet-label { color: var(--accent); }
 
+/* ---- Cabinet frame ---- */
 .cabinet {
   position: relative;
-  border-radius: 4px 4px 6px 6px;
-  padding: 16px 16px 22px;
+  border-radius: 6px;
+  padding: 18px;
   background:
-    repeating-linear-gradient(88deg, transparent 0px, rgba(0,0,0,0.10) 2px, transparent 4px, rgba(0,0,0,0.06) 6px, transparent 9px),
-    linear-gradient(180deg, #e0b878 0%, #c49060 30%, #a87048 70%, #8a5528 100%);
-  border: 2px solid #5a3010;
+    linear-gradient(180deg, #3a3a40 0%, #22222a 50%, #14141a 100%);
+  border: 1px solid #4a4a52;
   box-shadow:
-    0 22px 50px rgba(0,0,0,0.75),
-    inset 0 2px 0 rgba(255,240,200,0.28),
-    inset 0 -2px 0 rgba(0,0,0,0.35);
+    0 22px 50px rgba(0,0,0,0.85),
+    inset 0 2px 0 rgba(255,255,255,0.10),
+    inset 0 -2px 0 rgba(0,0,0,0.5);
 }
 
 .cabinet-scene { position: relative; transform-style: preserve-3d; }
 
 .cabinet-interior {
   position: relative;
-  min-height: 290px;
-  border-radius: 2px;
-  background: linear-gradient(180deg, #2a1a0c 0%, #1a1008 40%, #0e0804 100%);
-  padding: 22px 14px 8px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #0a0a0e 0%, #14141a 100%);
+  padding: 14px;
   box-shadow:
-    inset 0 10px 28px rgba(0,0,0,0.75),
-    inset 0 -6px 14px rgba(0,0,0,0.6);
+    inset 0 10px 30px rgba(0,0,0,0.85),
+    inset 0 -6px 16px rgba(0,0,0,0.7);
 }
 
-.shelf-row {
-  display: flex; gap: 5px; align-items: flex-end;
-  overflow-x: auto; overflow-y: hidden;
-  scrollbar-width: none; -ms-overflow-style: none;
-  padding-bottom: 8px; position: relative;
-  scroll-snap-type: x proximity;
-}
-.shelf-row::-webkit-scrollbar { display: none; }
-.shelf-row::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: -8px; height: 12px;
-  background: linear-gradient(180deg, #a06828 0%, #6a4020 40%, #2a1508 100%);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,220,160,0.35);
-  pointer-events: none; border-radius: 1px;
+.book-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
+/* ---- Book (a horizontal row, readable left-to-right) ---- */
 .book {
-  flex: 0 0 auto;
-  width: 44px; height: 210px;
-  position: relative;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 2px 2px 1px 1px;
-  box-shadow:
-    -2px 2px 5px rgba(0,0,0,0.5),
-    inset -3px 0 0 rgba(0,0,0,0.20),
-    inset 3px 0 0 rgba(255,255,255,0.20),
-    inset 0 2px 0 rgba(255,255,255,0.25),
-    inset 0 -1px 0 rgba(0,0,0,0.30);
+  display: flex;
+  align-items: stretch;
+  min-height: 62px;
+  border-radius: 3px;
   cursor: pointer;
   pointer-events: none;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  scroll-snap-align: start;
   text-decoration: none;
+  color: inherit;
+  background: linear-gradient(90deg, var(--c1) 0%, var(--c2) 100%);
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    inset 0 -1px 0 rgba(0,0,0,0.30);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  border: 1px solid transparent;
 }
 .cabinet-wrap.open .book { pointer-events: auto; }
-.cabinet-wrap.open .book:hover,
-.cabinet-wrap.open .book:focus-visible {
-  transform: translateY(-10px);
+.cabinet-wrap.open .book:hover {
   box-shadow:
-    -3px 8px 12px rgba(0,0,0,0.6),
-    inset -3px 0 0 rgba(0,0,0,0.20),
-    inset 3px 0 0 rgba(255,255,255,0.30),
-    0 0 18px rgba(212,160,74,0.55);
-  outline: none;
+    0 3px 10px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    inset 0 -1px 0 rgba(0,0,0,0.30),
+    0 0 0 1px rgba(212,160,74,0.55);
 }
 .cabinet-wrap.open .book:focus-visible {
-  outline: 2px solid var(--accent); outline-offset: 2px;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .book-spine {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
+  width: 8px;
+  flex-shrink: 0;
+  background: rgba(0,0,0,0.35);
+  box-shadow: inset -1px 0 0 rgba(255,255,255,0.10);
+}
+
+.book-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  min-width: 0;
+}
+
+.book-text { min-width: 0; flex: 1; }
+
+.book-title {
   font-family: "EB Garamond", Georgia, serif;
-  font-size: 0.74rem; font-weight: 600; letter-spacing: 0.02em;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.02rem;
+  line-height: 1.25;
   color: rgba(255,255,255,0.96);
   text-shadow: 0 1px 2px rgba(0,0,0,0.55);
-  line-height: 1.15;
-  padding: 12px 2px;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  max-height: 100%; text-align: center; max-width: 100%;
+  text-wrap: balance;
+  margin: 0;
+  overflow-wrap: break-word;
 }
 
+.book-label {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.78);
+  text-shadow: 0 1px 1px rgba(0,0,0,0.55);
+  margin: 3px 0 0;
+  line-height: 1.25;
+}
+.book-label:empty { display: none; }
+
+.book-pages {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.72);
+  text-shadow: 0 1px 1px rgba(0,0,0,0.5);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ---- Glass doors ---- */
 .cabinet-door {
-  position: absolute; top: 0; bottom: 0; width: 50%;
-  border: 2px solid #5a3010;
-  border-radius: 3px;
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 50%;
+  border: 1px solid rgba(232, 220, 197, 0.22);
+  border-radius: 2px;
+  cursor: pointer;
+  z-index: 5;
   transition: transform 1.15s cubic-bezier(0.34, 1.15, 0.64, 1);
   transform-style: preserve-3d;
-  cursor: pointer; z-index: 5;
   backface-visibility: hidden;
-}
-
-.cabinet-door-left {
-  left: 0; transform-origin: left center;
+  overflow: hidden;
   background:
-    repeating-linear-gradient(88deg, transparent 0px, rgba(0,0,0,0.09) 3px, transparent 5px, rgba(0,0,0,0.05) 8px, transparent 11px),
-    linear-gradient(90deg, #c49060 0%, #e0b878 40%, #c49060 70%, #a87048 100%);
-  box-shadow: inset 0 2px 0 rgba(255,240,200,0.20), inset 0 -2px 0 rgba(0,0,0,0.30);
+    linear-gradient(135deg,
+      rgba(232,220,197,0.05) 0%,
+      rgba(232,220,197,0.015) 25%,
+      rgba(232,220,197,0.08) 45%,
+      rgba(232,220,197,0.02) 60%,
+      rgba(232,220,197,0.06) 100%);
+  backdrop-filter: blur(2px) saturate(1.15);
+  -webkit-backdrop-filter: blur(2px) saturate(1.15);
+  box-shadow:
+    inset 0 0 40px rgba(232,220,197,0.04),
+    inset 1px 0 0 rgba(255,255,255,0.08);
 }
-.cabinet-door-right {
-  right: 0; transform-origin: right center;
-  background:
-    repeating-linear-gradient(88deg, transparent 0px, rgba(0,0,0,0.09) 3px, transparent 5px, rgba(0,0,0,0.05) 8px, transparent 11px),
-    linear-gradient(90deg, #a87048 0%, #c49060 30%, #e0b878 60%, #c49060 100%);
-  box-shadow: inset 0 2px 0 rgba(255,240,200,0.20), inset 0 -2px 0 rgba(0,0,0,0.30);
-}
-
 .cabinet-door::before {
-  content: ""; position: absolute; inset: 16px;
-  border: 2px solid rgba(74,40,16,0.5); border-radius: 1px;
-  box-shadow: inset 1px 1px 0 rgba(255,220,160,0.20), inset -1px -1px 0 rgba(0,0,0,0.25);
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(232, 220, 197, 0.18);
+  border-radius: 1px;
+  pointer-events: none;
 }
-
 .cabinet-door::after {
-  content: ""; position: absolute; top: 50%;
-  width: 18px; height: 18px; border-radius: 50%;
-  background: radial-gradient(circle at 30% 25%, #f8e0a0 0%, #d4a040 30%, #8a5018 70%, #3a1808 100%);
-  box-shadow: 0 3px 6px rgba(0,0,0,0.7), inset 0 -2px 3px rgba(0,0,0,0.4), inset 0 2px 2px rgba(255,240,200,0.5);
-  transform: translateY(-50%); z-index: 1;
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, #e8e0d0 0%, #a8a090 40%, #5a5448 100%);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.6), inset 0 -1px 2px rgba(0,0,0,0.3);
+  transform: translateY(-50%);
+  z-index: 1;
 }
-
-.cabinet-door-left::after { right: 16px; }
-.cabinet-door-right::after { left: 16px; }
+.cabinet-door-left { left: 0; transform-origin: left center; }
+.cabinet-door-right { right: 0; transform-origin: right center; }
+.cabinet-door-left::after { right: 14px; }
+.cabinet-door-right::after { left: 14px; }
 
 .cabinet-wrap.open .cabinet-door-left { transform: rotateY(-115deg); }
 .cabinet-wrap.open .cabinet-door-right { transform: rotateY(115deg); }
@@ -196,35 +237,19 @@ body {
 
 .hinge {
   position: absolute;
-  width: 12px; height: 22px;
-  background: linear-gradient(180deg, #e8b860 0%, #c49040 40%, #8a5a20 100%);
-  border: 1px solid #4a2810; border-radius: 2px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,240,200,0.5);
+  width: 10px; height: 18px;
+  background: linear-gradient(180deg, #c8c8d0 0%, #888890 40%, #40404a 100%);
+  border: 1px solid #2a2a32;
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.4);
   z-index: 6;
 }
-.hinge-tl { top: 14px; left: -6px; }
-.hinge-bl { bottom: 14px; left: -6px; }
-.hinge-tr { top: 14px; right: -6px; }
-.hinge-br { bottom: 14px; right: -6px; }
+.hinge-tl { top: 14px; left: -5px; }
+.hinge-bl { bottom: 14px; left: -5px; }
+.hinge-tr { top: 14px; right: -5px; }
+.hinge-br { bottom: 14px; right: -5px; }
 
-@keyframes bookEnter {
-  0% { opacity: 0; transform: translateY(36px) rotate(-4deg); }
-  60% { opacity: 1; transform: translateY(-5px) rotate(1.5deg); }
-  100% { opacity: 1; transform: translateY(0) rotate(0); }
-}
-.cabinet-wrap.open .book { animation: bookEnter 0.55s cubic-bezier(0.34, 1.35, 0.64, 1) both; }
-.cabinet-wrap.open .book:nth-child(1) { animation-delay: 0.30s; }
-.cabinet-wrap.open .book:nth-child(2) { animation-delay: 0.36s; }
-.cabinet-wrap.open .book:nth-child(3) { animation-delay: 0.42s; }
-.cabinet-wrap.open .book:nth-child(4) { animation-delay: 0.48s; }
-.cabinet-wrap.open .book:nth-child(5) { animation-delay: 0.54s; }
-.cabinet-wrap.open .book:nth-child(6) { animation-delay: 0.60s; }
-.cabinet-wrap.open .book:nth-child(7) { animation-delay: 0.66s; }
-.cabinet-wrap.open .book:nth-child(8) { animation-delay: 0.72s; }
-.cabinet-wrap.open .book:nth-child(9) { animation-delay: 0.78s; }
-.cabinet-wrap.open .book:nth-child(10) { animation-delay: 0.84s; }
-.cabinet-wrap.open .book:hover { animation: none; transform: translateY(-10px); }
-
+/* ---- Card overlay ---- */
 .card-overlay {
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.82);
@@ -305,10 +330,11 @@ body {
   .room-header { margin-bottom: 2rem; }
   .room-header h1 { font-size: 1.9rem; }
   .cabinet-wrap { margin-bottom: 2.5rem; }
-  .cabinet { padding: 12px 12px 18px; }
-  .cabinet-interior { min-height: 260px; padding: 18px 10px 6px; }
-  .book { width: 38px; height: 190px; }
-  .book-spine { font-size: 0.68rem; }
+  .cabinet { padding: 12px; }
+  .cabinet-interior { padding: 10px; }
+  .book { min-height: 56px; }
+  .book-body { padding: 10px 12px; }
+  .book-title { font-size: 0.94rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -331,46 +357,81 @@ body {
     <div class="cabinet">
       <div class="cabinet-scene">
         <div class="cabinet-interior">
-          <div class="shelf-row">
+          <div class="book-stack">
           <a class="book" href="../pdfs/s-to-f/Another_Lonely_Night.pdf.final_.pdf" target="_blank" rel="noopener"
              data-title="Another Lonely Night"
              data-label=""
              data-tagline="On a cold night in a lonesome town, a simple guy is trying to get home, but can&#39;t."
              data-pages="117"
-             style="background:linear-gradient(180deg,#c93838 0%,#7a1010 100%);">
-            <span class="book-spine">Another Lonely Night</span>
+             style="--c1:#c93838;--c2:#7a1010;">
+            <span class="book-spine" aria-hidden="true"></span>
+            <span class="book-body">
+              <span class="book-text">
+                <span class="book-title">Another Lonely Night</span>
+                <span class="book-label"></span>
+              </span>
+              <span class="book-pages">117 pp.</span>
+            </span>
           </a>
           <a class="book" href="../pdfs/s-to-f/Four_Chairs.pdf" target="_blank" rel="noopener"
              data-title="Four Chairs"
              data-label=""
              data-tagline="Four chairs, three people."
              data-pages="7"
-             style="background:linear-gradient(180deg,#d4a828 0%,#7a5010 100%);">
-            <span class="book-spine">Four Chairs</span>
+             style="--c1:#d4a828;--c2:#7a5010;">
+            <span class="book-spine" aria-hidden="true"></span>
+            <span class="book-body">
+              <span class="book-text">
+                <span class="book-title">Four Chairs</span>
+                <span class="book-label"></span>
+              </span>
+              <span class="book-pages">7 pp.</span>
+            </span>
           </a>
           <a class="book" href="../pdfs/s-to-f/Fred_Greg.Vol1.pdf" target="_blank" rel="noopener"
              data-title="Fred &amp; Greg, Vol. 1"
              data-label=""
              data-tagline="Two guys sit at a diner."
              data-pages="11"
-             style="background:linear-gradient(180deg,#2a6ad4 0%,#0e2a5a 100%);">
-            <span class="book-spine">Fred &amp; Greg, Vol. 1</span>
+             style="--c1:#2a6ad4;--c2:#0e2a5a;">
+            <span class="book-spine" aria-hidden="true"></span>
+            <span class="book-body">
+              <span class="book-text">
+                <span class="book-title">Fred &amp; Greg, Vol. 1</span>
+                <span class="book-label"></span>
+              </span>
+              <span class="book-pages">11 pp.</span>
+            </span>
           </a>
           <a class="book" href="../pdfs/s-to-f/SomethingLessThanTheWhole_pilot.pdf" target="_blank" rel="noopener"
              data-title="Something Less Than The Whole"
              data-label="Pilot"
              data-tagline="It takes a lot more to hide a tragedy than to commit it."
              data-pages="114"
-             style="background:linear-gradient(180deg,#3a9848 0%,#0e3a18 100%);">
-            <span class="book-spine">Something Less Than The Whole</span>
+             style="--c1:#3a9848;--c2:#0e3a18;">
+            <span class="book-spine" aria-hidden="true"></span>
+            <span class="book-body">
+              <span class="book-text">
+                <span class="book-title">Something Less Than The Whole</span>
+                <span class="book-label">Pilot</span>
+              </span>
+              <span class="book-pages">114 pp.</span>
+            </span>
           </a>
           <a class="book" href="../pdfs/s-to-f/The_interview_draft2.pdf" target="_blank" rel="noopener"
              data-title="The Interview"
              data-label=""
              data-tagline=""
              data-pages="7"
-             style="background:linear-gradient(180deg,#8a3aa8 0%,#3a1050 100%);">
-            <span class="book-spine">The Interview</span>
+             style="--c1:#8a3aa8;--c2:#3a1050;">
+            <span class="book-spine" aria-hidden="true"></span>
+            <span class="book-body">
+              <span class="book-text">
+                <span class="book-title">The Interview</span>
+                <span class="book-label"></span>
+              </span>
+              <span class="book-pages">7 pp.</span>
+            </span>
           </a>
           </div>
         </div>
@@ -388,78 +449,141 @@ body {
     <div class="cabinet">
       <div class="cabinet-scene">
         <div class="cabinet-interior">
-          <div class="shelf-row">
+          <div class="book-stack">
           <a class="book" href="../pdfs/leftovers/Fuor_Chairs_possible_openings_1_.pdf" target="_blank" rel="noopener"
              data-title="Fuor Chairs Possible Openings"
              data-label=""
              data-tagline=""
              data-pages="9"
-             style="background:linear-gradient(180deg,#c93838 0%,#7a1010 100%);">
-            <span class="book-spine">Fuor Chairs Possible Openings</span>
+             style="--c1:#c93838;--c2:#7a1010;">
+            <span class="book-spine" aria-hidden="true"></span>
+            <span class="book-body">
+              <span class="book-text">
+                <span class="book-title">Fuor Chairs Possible Openings</span>
+                <span class="book-label"></span>
+              </span>
+              <span class="book-pages">9 pp.</span>
+            </span>
           </a>
           <a class="book" href="../pdfs/leftovers/Jakarta_.pdf" target="_blank" rel="noopener"
              data-title="Jakarta"
              data-label=""
              data-tagline="Is it real what we dream of?"
              data-pages="47"
-             style="background:linear-gradient(180deg,#d4a828 0%,#7a5010 100%);">
-            <span class="book-spine">Jakarta</span>
+             style="--c1:#d4a828;--c2:#7a5010;">
+            <span class="book-spine" aria-hidden="true"></span>
+            <span class="book-body">
+              <span class="book-text">
+                <span class="book-title">Jakarta</span>
+                <span class="book-label"></span>
+              </span>
+              <span class="book-pages">47 pp.</span>
+            </span>
           </a>
           <a class="book" href="../pdfs/leftovers/Judy-June12.pdf" target="_blank" rel="noopener"
              data-title="Judy"
              data-label=""
              data-tagline="How much damage can one more do?"
              data-pages="42"
-             style="background:linear-gradient(180deg,#2a6ad4 0%,#0e2a5a 100%);">
-            <span class="book-spine">Judy</span>
+             style="--c1:#2a6ad4;--c2:#0e2a5a;">
+            <span class="book-spine" aria-hidden="true"></span>
+            <span class="book-body">
+              <span class="book-text">
+                <span class="book-title">Judy</span>
+                <span class="book-label"></span>
+              </span>
+              <span class="book-pages">42 pp.</span>
+            </span>
           </a>
           <a class="book" href="../pdfs/leftovers/Puma.pdf" target="_blank" rel="noopener"
              data-title="Puma"
              data-label=""
              data-tagline="What happens when the hero outlives its own myth?"
              data-pages="80"
-             style="background:linear-gradient(180deg,#3a9848 0%,#0e3a18 100%);">
-            <span class="book-spine">Puma</span>
+             style="--c1:#3a9848;--c2:#0e3a18;">
+            <span class="book-spine" aria-hidden="true"></span>
+            <span class="book-body">
+              <span class="book-text">
+                <span class="book-title">Puma</span>
+                <span class="book-label"></span>
+              </span>
+              <span class="book-pages">80 pp.</span>
+            </span>
           </a>
           <a class="book" href="../pdfs/leftovers/SomethingLessThanTheWhole_02.pdf" target="_blank" rel="noopener"
              data-title="Something Less Than The Whole"
              data-label="Fix Your Hearts Or Die — Ep. 02"
              data-tagline="The Games."
              data-pages="28"
-             style="background:linear-gradient(180deg,#8a3aa8 0%,#3a1050 100%);">
-            <span class="book-spine">Something Less Than The Whole</span>
+             style="--c1:#8a3aa8;--c2:#3a1050;">
+            <span class="book-spine" aria-hidden="true"></span>
+            <span class="book-body">
+              <span class="book-text">
+                <span class="book-title">Something Less Than The Whole</span>
+                <span class="book-label">Fix Your Hearts Or Die — Ep. 02</span>
+              </span>
+              <span class="book-pages">28 pp.</span>
+            </span>
           </a>
           <a class="book" href="../pdfs/leftovers/TheDoor_Draft1.pdf" target="_blank" rel="noopener"
              data-title="Something Less Than The Whole"
              data-label="The Door — Ep. 04"
              data-tagline="Get in."
              data-pages="10"
-             style="background:linear-gradient(180deg,#d86428 0%,#6a2008 100%);">
-            <span class="book-spine">Something Less Than The Whole</span>
+             style="--c1:#d86428;--c2:#6a2008;">
+            <span class="book-spine" aria-hidden="true"></span>
+            <span class="book-body">
+              <span class="book-text">
+                <span class="book-title">Something Less Than The Whole</span>
+                <span class="book-label">The Door — Ep. 04</span>
+              </span>
+              <span class="book-pages">10 pp.</span>
+            </span>
           </a>
           <a class="book" href="../pdfs/leftovers/STAINED_GLASS_-_FIRST_DRAFT_.pdf" target="_blank" rel="noopener"
              data-title="Stained Glass"
              data-label=""
              data-tagline="How much hits can your conscience take before you call it broken?"
              data-pages="33"
-             style="background:linear-gradient(180deg,#2a9898 0%,#0a4848 100%);">
-            <span class="book-spine">Stained Glass</span>
+             style="--c1:#2a9898;--c2:#0a4848;">
+            <span class="book-spine" aria-hidden="true"></span>
+            <span class="book-body">
+              <span class="book-text">
+                <span class="book-title">Stained Glass</span>
+                <span class="book-label"></span>
+              </span>
+              <span class="book-pages">33 pp.</span>
+            </span>
           </a>
           <a class="book" href="../pdfs/leftovers/The_Human_target.pdf" target="_blank" rel="noopener"
              data-title="The Human Target"
              data-label=""
              data-tagline="We die to live."
              data-pages="31"
-             style="background:linear-gradient(180deg,#b82aa8 0%,#4a0840 100%);">
-            <span class="book-spine">The Human Target</span>
+             style="--c1:#b82aa8;--c2:#4a0840;">
+            <span class="book-spine" aria-hidden="true"></span>
+            <span class="book-body">
+              <span class="book-text">
+                <span class="book-title">The Human Target</span>
+                <span class="book-label"></span>
+              </span>
+              <span class="book-pages">31 pp.</span>
+            </span>
           </a>
           <a class="book" href="../pdfs/leftovers/The_Void_-current_draft_2026-10-11_6_28pm.pdf" target="_blank" rel="noopener"
              data-title="The Void Current Draft 2026-10-11 6 28pm"
              data-label=""
              data-tagline=""
              data-pages="3"
-             style="background:linear-gradient(180deg,#a03050 0%,#3a0818 100%);">
-            <span class="book-spine">The Void Current Draft 2026-10-11 6 28pm</span>
+             style="--c1:#a03050;--c2:#3a0818;">
+            <span class="book-spine" aria-hidden="true"></span>
+            <span class="book-body">
+              <span class="book-text">
+                <span class="book-title">The Void Current Draft 2026-10-11 6 28pm</span>
+                <span class="book-label"></span>
+              </span>
+              <span class="book-pages">3 pp.</span>
+            </span>
           </a>
           </div>
         </div>
